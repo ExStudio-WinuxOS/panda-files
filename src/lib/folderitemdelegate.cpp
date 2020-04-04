@@ -186,35 +186,36 @@ void FolderItemDelegate::paint(QPainter* painter, const QStyleOptionViewItem& op
         // Draw select/deselect icons outside the main icon but near its top left corner,
         // with its 1/3 size and only if the icon size isn't smaller than 48 px
         // (otherwise, the user could not click on them easily).
-        const QAbstractItemView* iv = qobject_cast<const QAbstractItemView*>(opt.widget);
-        if(iv != nullptr
-           // only for the extended and multiple selection modes
-           && (iv->selectionMode() == QAbstractItemView::ExtendedSelection
-               || iv->selectionMode() == QAbstractItemView::MultiSelection)
-           && option.decorationSize.width() >= 48 && (opt.state & QStyle::State_MouseOver)) {
-            int s = option.decorationSize.width() / 3;
-            bool cursorOnSelectionCorner = false;
-            iconPos = QPoint(qMax(opt.rect.x(), iconPos.x() - s),
-                             qMax(opt.rect.y(), iconPos.y() - s));
-            QPoint curPos = iv->viewport()->mapFromGlobal(QCursor::pos());
-            if(curPos.x() >= iconPos.x() && curPos.x() <= iconPos.x() + s
-               && curPos.y() >= iconPos.y() && curPos.y() <= iconPos.y() + s) {
-                cursorOnSelectionCorner = true;
-            }
-            if(!cursorOnSelectionCorner) { // make it translucent when not under the cursor
-                painter->save();
-                painter->setOpacity(0.6);
-            }
-            if(opt.state & QStyle::State_Selected) {
-                painter->drawPixmap(iconPos, removeIcon_.pixmap(QSize(s, s), QIcon::Normal));
-            }
-            else {
-                painter->drawPixmap(iconPos, addIcon_.pixmap(QSize(s, s), QIcon::Normal));
-            }
-            if(!cursorOnSelectionCorner) {
-                painter->restore();
-            }
-        }
+        // rekols: 移除左上角图标
+        // const QAbstractItemView* iv = qobject_cast<const QAbstractItemView*>(opt.widget);
+        // if(iv != nullptr
+        //    // only for the extended and multiple selection modes
+        //    && (iv->selectionMode() == QAbstractItemView::ExtendedSelection
+        //        || iv->selectionMode() == QAbstractItemView::MultiSelection)
+        //    && option.decorationSize.width() >= 48 && (opt.state & QStyle::State_MouseOver)) {
+        //     int s = option.decorationSize.width() / 3;
+        //     bool cursorOnSelectionCorner = false;
+        //     iconPos = QPoint(qMax(opt.rect.x(), iconPos.x() - s),
+        //                      qMax(opt.rect.y(), iconPos.y() - s));
+        //     QPoint curPos = iv->viewport()->mapFromGlobal(QCursor::pos());
+        //     if(curPos.x() >= iconPos.x() && curPos.x() <= iconPos.x() + s
+        //        && curPos.y() >= iconPos.y() && curPos.y() <= iconPos.y() + s) {
+        //         cursorOnSelectionCorner = true;
+        //     }
+        //     if(!cursorOnSelectionCorner) { // make it translucent when not under the cursor
+        //         painter->save();
+        //         painter->setOpacity(0.6);
+        //     }
+        //     if(opt.state & QStyle::State_Selected) {
+        //         painter->drawPixmap(iconPos, removeIcon_.pixmap(QSize(s, s), QIcon::Normal));
+        //     }
+        //     else {
+        //         painter->drawPixmap(iconPos, addIcon_.pixmap(QSize(s, s), QIcon::Normal));
+        //     }
+        //     if(!cursorOnSelectionCorner) {
+        //         painter->restore();
+        //     }
+        // }
 
         // draw the text
         QSize drawAreaSize = itemSize_ - 2 * margins_;
