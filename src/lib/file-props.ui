@@ -756,7 +756,7 @@
   <customwidget>
    <class>Fm::AppChooserComboBox</class>
    <extends>QComboBox</extends>
-   <header>appchoosercombobox.h</header>
+   <header>lib/appchoosercombobox.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

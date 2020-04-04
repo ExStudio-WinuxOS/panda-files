@@ -126,7 +126,7 @@
   <customwidget>
    <class>Fm::AppMenuView</class>
    <extends>QTreeView</extends>
-   <header>appmenuview.h</header>
+   <header>lib/appmenuview.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

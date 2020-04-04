@@ -1,6 +1,12 @@
-#include <QApplication>
+#include "application.h"
 
 int main(int argc, char *argv[])
 {
-    return 0;
+    qunsetenv("QT_NO_GLIB");
+
+    Application app(argc, argv);
+    app.setAttribute(Qt::AA_UseHighDpiPixmaps, true);
+
+    app.init();
+    return app.exec();
 }

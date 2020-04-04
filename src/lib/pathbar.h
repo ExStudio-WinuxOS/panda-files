@@ -20,7 +20,6 @@
 #ifndef FM_PATHBAR_H
 #define FM_PATHBAR_H
 
-#include "libfmqtglobals.h"
 #include <QWidget>
 #include "core/filepath.h"
 
@@ -34,7 +33,7 @@ namespace Fm {
 class PathEdit;
 class PathButton;
 
-class LIBFM_QT_API PathBar: public QWidget {
+class PathBar: public QWidget {
     Q_OBJECT
 public:
     explicit PathBar(QWidget* parent = nullptr);

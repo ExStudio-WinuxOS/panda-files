@@ -97,19 +97,19 @@
   <customwidget>
    <class>Fm::SidePane</class>
    <extends>QWidget</extends>
-   <header location="global">sidepane.h</header>
+   <header location="global">lib/sidepane.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>Fm::FolderView</class>
    <extends>QWidget</extends>
-   <header>folderview.h</header>
+   <header>lib/folderview.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>Fm::PathBar</class>
    <extends>QWidget</extends>
-   <header>pathbar.h</header>
+   <header>lib/pathbar.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

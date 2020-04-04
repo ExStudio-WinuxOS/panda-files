@@ -151,7 +151,7 @@
   <customwidget>
    <class>Fm::ElidedLabel</class>
    <extends>QLabel</extends>
-   <header>fileoperationdialog_p.h</header>
+   <header>lib/fileoperationdialog_p.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

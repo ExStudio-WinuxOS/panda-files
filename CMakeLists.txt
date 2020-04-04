@@ -10,7 +10,7 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
 
-set(QT Core Gui Widgets Svg X11Extras LinguistTools)
+set(QT Core Gui Widgets DBus Svg X11Extras LinguistTools)
 find_package(Qt5 REQUIRED ${QT})
 find_package(PkgConfig REQUIRED)
 find_package(GLIB REQUIRED COMPONENTS gio gio-unix gobject gthread)
