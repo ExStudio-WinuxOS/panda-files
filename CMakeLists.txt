@@ -23,3 +23,5 @@ include(GenerateExportHeader)
 include(CMakePackageConfigHelpers)
 
 add_subdirectory(src)
+
+install(FILES data/panda-applications.menu DESTINATION "/etc/xdg/menus" COMPONENT Runtime)
