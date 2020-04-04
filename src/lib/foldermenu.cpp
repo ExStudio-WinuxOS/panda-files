@@ -18,7 +18,6 @@
  *
  */
 
-
 #include "foldermenu.h"
 #include "createnewmenu.h"
 #include "filepropsdialog.h"
@@ -32,13 +31,17 @@
 
 namespace Fm {
 
-FolderMenu::FolderMenu(FolderView* view, QWidget* parent):
-    QMenu(parent),
-    view_(view) {
-
+FolderMenu::FolderMenu(FolderView* view, QWidget* parent)
+    : QMenu(parent),
+      view_(view)
+{
     ProxyFolderModel* model = view_->model();
 
-    createAction_ = new QAction(tr("Create New"), this);
+    newFolderAction_ = new QAction(tr("New Folder"), this);
+    addAction(newFolderAction_);
+    connect(newFolderAction_, &QAction::triggered, this, &FolderMenu::onNewFolderActionTriggered);
+
+    createAction_ = new QAction(tr("New Document"), this);
     addAction(createAction_);
 
     createAction_->setMenu(new CreateNewMenu(view_, view_->path(), this));
@@ -225,7 +228,13 @@ void FolderMenu::createSortMenu() {
     connect(actionCaseSensitive, &QAction::triggered, this, &FolderMenu::onCaseSensitiveActionTriggered);
 }
 
-void FolderMenu::onPasteActionTriggered() {
+void FolderMenu::onNewFolderActionTriggered()
+{
+    Fm::createFileOrFolder(CreateNewFolder, view_->path(), nullptr, view_);
+}
+
+void FolderMenu::onPasteActionTriggered() 
+{
     auto folderPath = view_->path();
     if(folderPath) {
         pasteFilesFromClipboard(folderPath);

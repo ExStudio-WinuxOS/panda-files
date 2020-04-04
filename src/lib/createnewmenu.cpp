@@ -27,7 +27,6 @@
 
 namespace Fm {
 
-
 class TemplateAction: public QAction {
 public:
     TemplateAction(std::shared_ptr<const TemplateItem> item, QObject* parent):
@@ -42,15 +41,15 @@ public:
     void setTemplateItem(std::shared_ptr<const TemplateItem> item) {
         templateItem_ = std::move(item);
         auto mimeType = templateItem_->mimeType();
-        setText(QStringLiteral("%1 (%2)").arg(templateItem_->displayName(),
-                                              QString::fromUtf8(mimeType->desc())));
+        // setText(QStringLiteral("%1 (%2)").arg(templateItem_->displayName(),
+        //                                       QString::fromUtf8(mimeType->desc())));
+        setText(templateItem_->displayName());
         setIcon(templateItem_->icon()->qicon());
     }
 
 private:
     std::shared_ptr<const TemplateItem> templateItem_;
 };
-
 
 CreateNewMenu::CreateNewMenu(QWidget* dialogParent, Fm::FilePath dirPath, QWidget* parent):
     QMenu(parent),
@@ -59,11 +58,11 @@ CreateNewMenu::CreateNewMenu(QWidget* dialogParent, Fm::FilePath dirPath, QWidge
     templateSeparator_{nullptr},
     templates_{Templates::globalInstance()}
 {
-    QAction* action = new QAction(QIcon::fromTheme(QStringLiteral("folder-new")), tr("Folder"), this);
-    connect(action, &QAction::triggered, this, &CreateNewMenu::onCreateNewFolder);
-    addAction(action);
+    // QAction* action = new QAction(QIcon::fromTheme(QStringLiteral("folder-new")), tr("Folder"), this);
+    // connect(action, &QAction::triggered, this, &CreateNewMenu::onCreateNewFolder);
+    // addAction(action);
 
-    action = new QAction(QIcon::fromTheme(QStringLiteral("document-new")), tr("Blank File"), this);
+    QAction *action = new QAction(tr("Blank File"), this);
     connect(action, &QAction::triggered, this, &CreateNewMenu::onCreateNewFile);
     addAction(action);
 

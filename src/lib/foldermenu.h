@@ -91,6 +91,7 @@ protected:
     void addCustomActionItem(QMenu* menu, std::shared_ptr<const FileActionItem> item);
 
 protected Q_SLOTS:
+    void onNewFolderActionTriggered();
     void onPasteActionTriggered();
     void onSelectAllActionTriggered();
     void onInvertSelectionActionTriggered();
@@ -109,21 +110,22 @@ private:
 
 private:
     FolderView* view_;
-    QAction* createAction_;
-    QAction* separator1_;
-    QAction* pasteAction_;
-    QAction* separator2_;
-    QAction* selectAllAction_;
+    QAction *newFolderAction_;
+    QAction *createAction_;
+    QAction *separator1_;
+    QAction *pasteAction_;
+    QAction *separator2_;
+    QAction *selectAllAction_;
     // QAction* invertSelectionAction_;
-    QAction* separator3_;
-    QAction* sortAction_;
-    QActionGroup* sortActionGroup_;
-    QMenu* sortMenu_;
-    QAction* actionAscending_;
-    QAction* actionDescending_;
-    QAction* showHiddenAction_;
-    QAction* separator4_;
-    QAction* propertiesAction_;
+    QAction *separator3_;
+    QAction *sortAction_;
+    QActionGroup *sortActionGroup_;
+    QMenu *sortMenu_;
+    QAction *actionAscending_;
+    QAction *actionDescending_;
+    QAction *showHiddenAction_;
+    QAction *separator4_;
+    QAction *propertiesAction_;
 };
 
 }

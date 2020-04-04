@@ -19,16 +19,20 @@
 
 #include "utilities.h"
 #include "utilities_p.h"
+#include "fileoperation.h"
+
+// Qt
 #include <QApplication>
 #include <QClipboard>
 #include <QMimeData>
 #include <QUrl>
 #include <QList>
 #include <QStringBuilder>
+#include "QRegularExpression"
 #include <QMessageBox>
-#include "fileoperation.h"
 #include <QEventLoop>
 
+// Other
 #include <pwd.h>
 #include <grp.h>
 #include <cstdlib>
@@ -259,7 +263,7 @@ _retry:
 
         QMessageBox::critical(parent ? parent->window() : nullptr, QObject::tr("Error"), err.message());
     }
-    else { // reload the containing folder if it is in use but does not have a file monitor
+    if (!err) { // reload the containing folder if it is in use but does not have a file monitor
         auto folder = Fm::Folder::findByPath(parentDir);
         if(folder && folder->isValid() && folder->isLoaded() && !folder->hasFileMonitor()) {
             folder->reload();
