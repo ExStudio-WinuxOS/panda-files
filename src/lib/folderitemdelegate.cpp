@@ -403,22 +403,23 @@ void FolderItemDelegate::drawText(QPainter* painter, QStyleOptionViewItem& opt, 
         }
     }
 
-    if(opt.state & QStyle::State_HasFocus) {
-        // draw focus rect
-        QStyleOptionFocusRect o;
-        o.QStyleOption::operator=(opt);
-        o.rect = selRect.toRect(); // subElementRect(SE_ItemViewItemFocusRect, vopt, widget);
-        o.state |= QStyle::State_KeyboardFocusChange;
-        o.state |= QStyle::State_Item;
-        QPalette::ColorGroup cg = (opt.state & QStyle::State_Enabled)
-                                  ? QPalette::Normal : QPalette::Disabled;
-        o.backgroundColor = opt.palette.color(cg, (opt.state & QStyle::State_Selected)
-                                              ? QPalette::Highlight : QPalette::Window);
-        if(const QWidget* widget = opt.widget) {
-            QStyle* style = widget->style() ? widget->style() : qApp->style();
-            style->drawPrimitive(QStyle::PE_FrameFocusRect, &o, painter, widget);
-        }
-    }
+    // rekols: 去除focus背景颜色
+//    if(opt.state & QStyle::State_HasFocus) {
+//        // draw focus rect
+//        QStyleOptionFocusRect o;
+//        o.QStyleOption::operator=(opt);
+//        o.rect = selRect.toRect(); // subElementRect(SE_ItemViewItemFocusRect, vopt, widget);
+//        o.state |= QStyle::State_KeyboardFocusChange;
+//        o.state |= QStyle::State_Item;
+//        QPalette::ColorGroup cg = (opt.state & QStyle::State_Enabled)
+//                                  ? QPalette::Normal : QPalette::Disabled;
+//        o.backgroundColor = opt.palette.color(cg, (opt.state & QStyle::State_Selected)
+//                                              ? QPalette::Highlight : QPalette::Window);
+//        if(const QWidget* widget = opt.widget) {
+//            QStyle* style = widget->style() ? widget->style() : qApp->style();
+//            style->drawPrimitive(QStyle::PE_FrameFocusRect, &o, painter, widget);
+//        }
+//    }
 }
 
 /*
