@@ -24,6 +24,7 @@
 #include "core/templates.h"
 
 #include <algorithm>
+#include <QDebug>
 
 namespace Fm {
 

@@ -37,15 +37,15 @@
 
 namespace Fm {
 
-FileMenu::FileMenu(Fm::FileInfoList files, std::shared_ptr<const Fm::FileInfo> info, Fm::FilePath cwd, bool isWritableDir, const QString& title, QWidget* parent):
-    QMenu(title, parent),
-    files_{std::move(files)},
-    info_{std::move(info)},
-    cwd_{std::move(cwd)},
-    unTrashAction_(nullptr),
-    fileLauncher_(nullptr) {
-
-    useTrash_ = true;
+FileMenu::FileMenu(Fm::FileInfoList files, std::shared_ptr<const Fm::FileInfo> info, Fm::FilePath cwd, bool isWritableDir, const QString& title, QWidget* parent)
+    : QMenu(title, parent),
+      files_{std::move(files)},
+      info_{std::move(info)},
+      cwd_{std::move(cwd)},
+      unTrashAction_(nullptr),
+      fileLauncher_(nullptr) 
+{
+     useTrash_ = true;
     confirmDelete_ = true;
     confirmTrash_ = false; // Confirm before moving files into "trash can"
 
@@ -77,7 +77,7 @@ FileMenu::FileMenu(Fm::FileInfoList files, std::shared_ptr<const Fm::FileInfo> i
     // check if the files are all in the trash can
     allTrash_ =  sameFilesystem_ && path.hasUriScheme("trash");
 
-    openAction_ = new QAction(QIcon::fromTheme(QStringLiteral("document-open")), tr("Open"), this);
+    openAction_ = new QAction(tr("Open"), this);
     connect(openAction_, &QAction::triggered, this, &FileMenu::onOpenTriggered);
     addAction(openAction_);
 
@@ -115,10 +115,10 @@ FileMenu::FileMenu(Fm::FileInfoList files, std::shared_ptr<const Fm::FileInfo> i
 
     separator1_ = addSeparator();
 
-    createAction_ = new QAction(tr("Create &New"), this);
-    Fm::FilePath dirPath = files_.size() == 1 && info_->isDir() ? path : cwd_;
-    createAction_->setMenu(new CreateNewMenu(parent, dirPath, this));
-    addAction(createAction_);
+    // createAction_ = new QAction(tr("Create &New"), this);
+    // Fm::FilePath dirPath = files_.size() == 1 && info_->isDir() ? path : cwd_;
+    // createAction_->setMenu(new CreateNewMenu(parent, dirPath, this));
+    // addAction(createAction_);
 
     separator2_ = addSeparator();
 
@@ -185,7 +185,7 @@ FileMenu::FileMenu(Fm::FileInfoList files, std::shared_ptr<const Fm::FileInfo> i
         if(!(sameType_ && info_->isDir()
              && (files_.size() > 1 ? isWritableDir : info_->isWritable()))) {
             pasteAction_->setEnabled(false);
-            createAction_->setEnabled(false);
+            // createAction_->setEnabled(false);
         }
     }
 
@@ -235,7 +235,7 @@ FileMenu::FileMenu(Fm::FileInfoList files, std::shared_ptr<const Fm::FileInfo> i
 
     separator3_ = addSeparator();
 
-    propertiesAction_ = new QAction(QIcon::fromTheme(QStringLiteral("document-properties")), tr("Properties"), this);
+    propertiesAction_ = new QAction(tr("Properties"), this);
     connect(propertiesAction_, &QAction::triggered, this, &FileMenu::onFilePropertiesTriggered);
     addAction(propertiesAction_);
 }

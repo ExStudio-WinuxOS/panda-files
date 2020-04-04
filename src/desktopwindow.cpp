@@ -879,9 +879,10 @@ void DesktopWindow::updateFromSettings(Settings& settings, bool changeSlide)
     }
 }
 
-void DesktopWindow::onFileClicked(int type, const std::shared_ptr<const Fm::FileInfo>& fileInfo) {
-    if(desktopHideItems_) { // only a context menu with desktop actions
-        if(type == Fm::FolderView::ActivatedClick) {
+void DesktopWindow::onFileClicked(int type, const std::shared_ptr<const Fm::FileInfo>& fileInfo) 
+{
+    if (desktopHideItems_) { // only a context menu with desktop actions
+        if (type == Fm::FolderView::ActivatedClick) {
             return;
         }
         QMenu* menu = new QMenu(this);
@@ -908,10 +909,11 @@ void DesktopWindow::onFileClicked(int type, const std::shared_ptr<const Fm::File
                         onFileClicked(Fm::FolderView::ActivatedClick, fileInfo);
                     });
                     // "Stick" action for all
-                    action = menu->addAction(tr("Stic&k to Current Position"));
-                    action->setCheckable(true);
-                    action->setChecked(customItemPos_.find(fileInfo->name()) != customItemPos_.cend());
-                    connect(action, &QAction::toggled, this, &DesktopWindow::onStickToCurrentPos);
+                    // rekols: 简化此功能
+                    // action = menu->addAction(tr("Stic&k to Current Position"));
+                    // action->setCheckable(true);
+                    // action->setChecked(customItemPos_.find(fileInfo->name()) != customItemPos_.cend());
+                    // connect(action, &QAction::toggled, this, &DesktopWindow::onStickToCurrentPos);
                     // "Empty Trash" action for Trash shortcut
                     if(fileName == QLatin1String("trash-can.desktop")) {
                         menu->addSeparator();
@@ -944,6 +946,8 @@ void DesktopWindow::onFileClicked(int type, const std::shared_ptr<const Fm::File
 
 void DesktopWindow::prepareFileMenu(Fm::FileMenu* menu)
 {
+    return;
+
     // qDebug("DesktopWindow::prepareFileMenu");
     QAction* action = new QAction(tr("Stic&k to Current Position"), menu);
     action->setCheckable(true);
@@ -965,17 +969,29 @@ void DesktopWindow::prepareFileMenu(Fm::FileMenu* menu)
 void DesktopWindow::prepareFolderMenu(Fm::FolderMenu* menu)
 {
     // remove file properties action
-    menu->removeAction(menu->propertiesAction());
+    // rekols: 保留菜单的属性 action
+    // menu->removeAction(menu->propertiesAction());
     // add desktop actions instead
     addDesktopActions(menu);
 }
 
-void DesktopWindow::addDesktopActions(QMenu* menu) {
-    QAction* action = menu->addAction(tr("Hide Desktop Items"));
+void DesktopWindow::addDesktopActions(QMenu* menu) 
+{
+    QAction *action = new QAction(tr("Hide Desktop Items"), this);
     action->setCheckable(true);
     action->setChecked(desktopHideItems_);
-    menu->addSeparator();
+
+    // 保持"属性" action 在最后
+    if (static_cast<Fm::FolderMenu *>(menu)) {
+        menu->insertAction(static_cast<Fm::FolderMenu *>(menu)->propertiesAction(), action);
+        menu->insertSeparator(static_cast<Fm::FolderMenu *>(menu)->propertiesAction());
+    } else {
+        menu->addAction(action);
+        menu->addSeparator();
+    }
+
     connect(action, &QAction::triggered, this, &DesktopWindow::toggleDesktop);
+
     // if(!desktopHideItems_) {
         // action = menu->addAction(tr("Create Launcher"));
         // connect(action, &QAction::triggered, this, &DesktopWindow::onCreatingShortcut);

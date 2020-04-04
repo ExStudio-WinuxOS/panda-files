@@ -96,9 +96,9 @@ FolderMenu::FolderMenu(FolderView* view, QWidget* parent)
         createAction_->setEnabled(folderInfo->isWritable());
     }
 
-    separator4_ = addSeparator();
+    // separator4_ = addSeparator();
 
-    propertiesAction_ = new QAction(tr("Folder Pr&operties"), this);
+    propertiesAction_ = new QAction(tr("Properties"), this);
     addAction(propertiesAction_);
     connect(propertiesAction_, &QAction::triggered, this, &FolderMenu::onPropertiesActionTriggered);
 }
