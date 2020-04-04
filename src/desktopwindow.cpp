@@ -976,12 +976,12 @@ void DesktopWindow::addDesktopActions(QMenu* menu) {
     action->setChecked(desktopHideItems_);
     menu->addSeparator();
     connect(action, &QAction::triggered, this, &DesktopWindow::toggleDesktop);
-    if(!desktopHideItems_) {
-        action = menu->addAction(tr("Create Launcher"));
-        connect(action, &QAction::triggered, this, &DesktopWindow::onCreatingShortcut);
-    }
-    action = menu->addAction(tr("Desktop Preferences"));
-    connect(action, &QAction::triggered, this, &DesktopWindow::onDesktopPreferences);
+    // if(!desktopHideItems_) {
+        // action = menu->addAction(tr("Create Launcher"));
+        // connect(action, &QAction::triggered, this, &DesktopWindow::onCreatingShortcut);
+    // }
+    // action = menu->addAction(tr("Desktop Preferences"));
+    // connect(action, &QAction::triggered, this, &DesktopWindow::onDesktopPreferences);
 }
 
 void DesktopWindow::toggleDesktop() {
