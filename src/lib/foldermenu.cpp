@@ -38,14 +38,14 @@ FolderMenu::FolderMenu(FolderView* view, QWidget* parent):
 
     ProxyFolderModel* model = view_->model();
 
-    createAction_ = new QAction(tr("Create &New"), this);
+    createAction_ = new QAction(tr("Create New"), this);
     addAction(createAction_);
 
     createAction_->setMenu(new CreateNewMenu(view_, view_->path(), this));
 
     separator1_ = addSeparator();
 
-    pasteAction_ = new QAction(QIcon::fromTheme(QStringLiteral("edit-paste")), tr("&Paste"), this);
+    pasteAction_ = new QAction(tr("Paste"), this);
     addAction(pasteAction_);
     connect(pasteAction_, &QAction::triggered, this, &FolderMenu::onPasteActionTriggered);
 
@@ -55,9 +55,9 @@ FolderMenu::FolderMenu(FolderView* view, QWidget* parent):
     addAction(selectAllAction_);
     connect(selectAllAction_, &QAction::triggered, this, &FolderMenu::onSelectAllActionTriggered);
 
-    invertSelectionAction_ = new QAction(tr("Invert Selection"), this);
-    addAction(invertSelectionAction_);
-    connect(invertSelectionAction_, &QAction::triggered, this, &FolderMenu::onInvertSelectionActionTriggered);
+    // invertSelectionAction_ = new QAction(tr("Invert Selection"), this);
+    // addAction(invertSelectionAction_);
+    // connect(invertSelectionAction_, &QAction::triggered, this, &FolderMenu::onInvertSelectionActionTriggered);
 
     separator3_ = addSeparator();
 

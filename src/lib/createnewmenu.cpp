@@ -57,8 +57,8 @@ CreateNewMenu::CreateNewMenu(QWidget* dialogParent, Fm::FilePath dirPath, QWidge
     dialogParent_(dialogParent),
     dirPath_(std::move(dirPath)),
     templateSeparator_{nullptr},
-    templates_{Templates::globalInstance()} {
-
+    templates_{Templates::globalInstance()}
+{
     QAction* action = new QAction(QIcon::fromTheme(QStringLiteral("folder-new")), tr("Folder"), this);
     connect(action, &QAction::triggered, this, &CreateNewMenu::onCreateNewFolder);
     addAction(action);

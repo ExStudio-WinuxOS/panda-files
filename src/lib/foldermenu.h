@@ -59,9 +59,9 @@ public:
         return selectAllAction_;
     }
 
-    QAction* invertSelectionAction() {
-        return invertSelectionAction_;
-    }
+    // QAction* invertSelectionAction() {
+    //     return invertSelectionAction_;
+    // }
 
     QAction* separator3() {
         return separator3_;
@@ -114,7 +114,7 @@ private:
     QAction* pasteAction_;
     QAction* separator2_;
     QAction* selectAllAction_;
-    QAction* invertSelectionAction_;
+    // QAction* invertSelectionAction_;
     QAction* separator3_;
     QAction* sortAction_;
     QActionGroup* sortActionGroup_;

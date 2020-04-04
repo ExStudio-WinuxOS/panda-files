@@ -17,7 +17,6 @@
  *
  */
 
-
 #include "filemenu.h"
 #include "createnewmenu.h"
 #include "filepropsdialog.h"
@@ -26,18 +25,15 @@
 #include "filelauncher.h"
 #include "appchooserdialog.h"
 
+#include "filemenu_p.h"
+#include "core/archiver.h"
+#include "core/legacy/fm-app-info.h"
 #include "customactions/fileaction.h"
 #include "customaction_p.h"
 
 #include <QMessageBox>
 #include <QAbstractItemView>
 #include <QDebug>
-#include "filemenu_p.h"
-
-#include "core/archiver.h"
-
-#include "core/legacy/fm-app-info.h"
-
 
 namespace Fm {
 
@@ -144,19 +140,19 @@ FileMenu::FileMenu(Fm::FileInfoList files, std::shared_ptr<const Fm::FileInfo> i
         }
     }
     else { // ordinary files
-        cutAction_ = new QAction(QIcon::fromTheme(QStringLiteral("edit-cut")), tr("Cut"), this);
+        cutAction_ = new QAction(tr("Cut"), this);
         connect(cutAction_, &QAction::triggered, this, &FileMenu::onCutTriggered);
         addAction(cutAction_);
 
-        copyAction_ = new QAction(QIcon::fromTheme(QStringLiteral("edit-copy")), tr("Copy"), this);
+        copyAction_ = new QAction(tr("Copy"), this);
         connect(copyAction_, &QAction::triggered, this, &FileMenu::onCopyTriggered);
         addAction(copyAction_);
 
-        pasteAction_ = new QAction(QIcon::fromTheme(QStringLiteral("edit-paste")), tr("Paste"), this);
+        pasteAction_ = new QAction(tr("Paste"), this);
         connect(pasteAction_, &QAction::triggered, this, &FileMenu::onPasteTriggered);
         addAction(pasteAction_);
 
-        deleteAction_ = new QAction(QIcon::fromTheme(QStringLiteral("user-trash")), tr("&Move to Trash"), this);
+        deleteAction_ = new QAction(tr("Move to Trash"), this);
         connect(deleteAction_, &QAction::triggered, this, &FileMenu::onDeleteTriggered);
         addAction(deleteAction_);
 
