@@ -43,9 +43,9 @@ FileMenu::FileMenu(Fm::FileInfoList files, std::shared_ptr<const Fm::FileInfo> i
       info_{std::move(info)},
       cwd_{std::move(cwd)},
       unTrashAction_(nullptr),
-      fileLauncher_(nullptr) 
+      fileLauncher_(nullptr)
 {
-     useTrash_ = true;
+    useTrash_ = true;
     confirmDelete_ = true;
     confirmTrash_ = false; // Confirm before moving files into "trash can"
 
@@ -82,7 +82,9 @@ FileMenu::FileMenu(Fm::FileInfoList files, std::shared_ptr<const Fm::FileInfo> i
     addAction(openAction_);
 
     openWithMenuAction_ = new QAction(tr("Open With..."), this);
-    addAction(openWithMenuAction_);
+    // rekols: 如果是目录则不支持用其他方式打开
+    if (!mime_type->isDir())
+        addAction(openWithMenuAction_);
     // create the "Open with..." sub menu
     QMenu* menu = new QMenu(this);
     openWithMenuAction_->setMenu(menu);
