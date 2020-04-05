@@ -41,8 +41,6 @@ FolderItemDelegate::FolderItemDelegate(QAbstractItemView* view, QObject* parent)
     QStyledItemDelegate(parent ? parent : view),
     symlinkIcon_(QIcon::fromTheme(QStringLiteral("emblem-symbolic-link"))),
     untrustedIcon_(QIcon::fromTheme(QStringLiteral("emblem-important"))),
-    addIcon_(QIcon::fromTheme(QStringLiteral("list-add"))),
-    removeIcon_(QIcon::fromTheme(QStringLiteral("list-remove"))),
     fileInfoRole_(Fm::FolderModel::FileInfoRole),
     iconInfoRole_(-1),
     margins_(QSize(3, 3)),
@@ -138,14 +136,25 @@ void FolderItemDelegate::paint(QPainter* painter, const QStyleOptionViewItem& op
             untrusted = false;
         }
     }
+
+    painter->setRenderHints(QPainter::Antialiasing);
+
     // vertical layout (icon mode, thumbnail mode)
-    if(option.decorationPosition == QStyleOptionViewItem::Top ||
+    if (option.decorationPosition == QStyleOptionViewItem::Top ||
             option.decorationPosition == QStyleOptionViewItem::Bottom) {
         painter->save();
         painter->setClipRect(option.rect);
 
         opt.decorationAlignment = Qt::AlignHCenter | Qt::AlignTop;
         opt.displayAlignment = Qt::AlignTop | Qt::AlignHCenter;
+
+        if (opt.state & QStyle::State_Selected) {
+            painter->save();
+            painter->setPen(Qt::NoPen);
+            painter->setBrush(QColor(0, 158, 255, 200));
+            painter->drawRoundedRect(option.rect.marginsRemoved(QMargins(5, 5, 5, 5)), 10, 10);
+            painter->restore();
+        }
 
         // draw the icon
         QIcon::Mode iconMode = shadowIcon ? QIcon::Disabled
@@ -348,31 +357,31 @@ void FolderItemDelegate::drawText(QPainter* painter, QStyleOptionViewItem& opt, 
 
     // Respect the active and inactive palettes (some styles can use different colors for them).
     // Also, take into account a probable disabled palette.
-    QPalette::ColorGroup cg = (opt.state & QStyle::State_Enabled)
-                                  ? (opt.state & QStyle::State_Active)
-                                      ? QPalette::Active
-                                      : QPalette::Inactive
-                                  : QPalette::Disabled;
-    if(opt.state & QStyle::State_Selected) {
-        if(!opt.widget) {
-            painter->fillRect(selRect, opt.palette.highlight());
-        }
-        painter->setPen(opt.palette.color(cg, QPalette::HighlightedText));
-    }
-    else {
-        painter->setPen(opt.palette.color(cg, QPalette::Text));
-    }
+    // QPalette::ColorGroup cg = (opt.state & QStyle::State_Enabled)
+    //                               ? (opt.state & QStyle::State_Active)
+    //                                   ? QPalette::Active
+    //                                   : QPalette::Inactive
+    //                               : QPalette::Disabled;
+    // if(opt.state & QStyle::State_Selected) {
+    //     if(!opt.widget) {
+    //         painter->fillRect(selRect, opt.palette.highlight());
+    //     }
+    //     painter->setPen(opt.palette.color(cg, QPalette::HighlightedText));
+    // }
+    // else {
+    //     painter->setPen(opt.palette.color(cg, QPalette::Text));
+    // }
 
-    if(opt.state & QStyle::State_Selected || opt.state & QStyle::State_MouseOver) {
-        if(const QWidget* widget = opt.widget) {  // let the style engine do it
-            QStyle* style = widget->style() ? widget->style() : qApp->style();
-            QStyleOptionViewItem o(opt);
-            o.text = QString();
-            o.rect = selRect.toAlignedRect().intersected(opt.rect); // due to clipping and rounding, we might lose 1px
-            o.showDecorationSelected = true;
-            style->drawPrimitive(QStyle::PE_PanelItemViewItem, &o, painter, widget);
-        }
-    }
+    // if(opt.state & QStyle::State_Selected || opt.state & QStyle::State_MouseOver) {
+    //     if(const QWidget* widget = opt.widget) {  // let the style engine do it
+    //         QStyle* style = widget->style() ? widget->style() : qApp->style();
+    //         QStyleOptionViewItem o(opt);
+    //         o.text = QString();
+    //         o.rect = selRect.toAlignedRect().intersected(opt.rect); // due to clipping and rounding, we might lose 1px
+    //         o.showDecorationSelected = true;
+    //         style->drawPrimitive(QStyle::PE_PanelItemViewItem, &o, painter, widget);
+    //     }
+    // }
 
     // draw shadow for text if the item is not selected and a shadow color is set
     if(!(opt.state & QStyle::State_Selected) && shadowColor_.isValid()) {
@@ -511,7 +520,8 @@ bool FolderItemDelegate::eventFilter(QObject* object, QEvent* event) {
     return QStyledItemDelegate::eventFilter(object, event);
 }
 
-void FolderItemDelegate::updateEditorGeometry(QWidget* editor, const QStyleOptionViewItem& option, const QModelIndex& index) const {
+void FolderItemDelegate::updateEditorGeometry(QWidget* editor, const QStyleOptionViewItem& option, const QModelIndex& index) const 
+{
     if (option.decorationPosition == QStyleOptionViewItem::Top
         || option.decorationPosition == QStyleOptionViewItem::Bottom) {
         // give all of the available space to the editor
@@ -521,12 +531,11 @@ void FolderItemDelegate::updateEditorGeometry(QWidget* editor, const QStyleOptio
         opt.displayAlignment = Qt::AlignTop|Qt::AlignHCenter;
         QRect textRect(opt.rect.x(),
                        opt.rect.y() + margins_.height() + option.decorationSize.height(),
-                       itemSize_.width(),
-                       itemSize_.height() - margins_.height() - option.decorationSize.height());
+                       itemSize_.width() - 10,
+                       itemSize_.height() - margins_.height() - option.decorationSize.height() - 10);
         int frame = editor->style()->pixelMetric(QStyle::PM_DefaultFrameWidth, &option, editor);
-        editor->setGeometry(textRect.adjusted(-frame, -frame, frame, frame));
-    }
-    else {
+        editor->setGeometry(textRect.adjusted(-frame + 10, -frame, frame, frame));
+    } else {
         // use the default editor geometry in compact view
         QStyledItemDelegate::updateEditorGeometry(editor, option, index);
     }
