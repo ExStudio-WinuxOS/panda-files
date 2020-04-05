@@ -133,11 +133,6 @@ public:
 
     QString profileDir(QString profile, bool useFallback = false);
 
-    // setter/getter functions
-    QString profileName() const {
-        return profileName_;
-    }
-
     bool supportTrash() const {
         return supportTrash_;
     }
@@ -300,16 +295,8 @@ public:
         return desktopBgColor_;
     }
 
-    void setDesktopBgColor(QColor desktopBgColor) {
-        desktopBgColor_ = desktopBgColor;
-    }
-
     const QColor& desktopFgColor() const {
         return desktopFgColor_;
-    }
-
-    void setDesktopFgColor(QColor desktopFgColor) {
-        desktopFgColor_ = desktopFgColor;
     }
 
     const QColor& desktopShadowColor() const {
@@ -958,7 +945,7 @@ public:
 private:
     int toIconSize(int size, IconType type) const;
 
-    QString profileName_;
+    QString profilePath_;
     bool supportTrash_;
 
     // PCManFM specific

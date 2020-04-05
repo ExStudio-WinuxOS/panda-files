@@ -52,9 +52,9 @@ Settings::Settings():
     wallpaperRandomize_(false),
     transformWallpaper_(false),
     perScreenWallpaper_(false),
-    desktopBgColor_(),
-    desktopFgColor_(),
-    desktopShadowColor_(),
+    desktopBgColor_(Qt::black),
+    desktopFgColor_(Qt::white),
+    desktopShadowColor_(Qt::black),
     desktopIconSize_(48),
     desktopShowHidden_(false),
     desktopHideItems_(false),
@@ -115,7 +115,9 @@ Settings::Settings():
     searchNameRegexp_(true),
     searchContentRegexp_(true),
     searchRecursive_(false),
-    searchhHidden_(false) {
+    searchhHidden_(false)
+{
+    profilePath_ = profileDir("settings.config");
 }
 
 Settings::~Settings() {
@@ -160,20 +162,21 @@ QString Settings::profileDir(QString profile, bool useFallback) {
     return dirName;
 }
 
-bool Settings::load(QString profile) {
-    profileName_ = profile;
-    QString fileName = profileDir(profile, true) + QStringLiteral("/settings.conf");
-    return loadFile(fileName);
+bool Settings::load(QString profile)
+{
+    return loadFile(profilePath_);
 }
 
-bool Settings::save(QString profile) {
-    QString fileName = profileDir(profile.isEmpty() ? profileName_ : profile) + QStringLiteral("/settings.conf");
-    return saveFile(fileName);
+bool Settings::save(QString profile)
+{
+    qDebug() << "save settings";
+    return saveFile(profilePath_);
 }
 
 bool Settings::loadFile(QString filePath)
 {
     QSettings settings(filePath, QSettings::IniFormat);
+    qDebug() << "load file: " << settings.fileName();
     settings.beginGroup(QStringLiteral("System"));
     fallbackIconThemeName_ = settings.value(QStringLiteral("FallbackIconThemeName")).toString();
     if(fallbackIconThemeName_.isEmpty()) {
@@ -219,9 +222,6 @@ bool Settings::loadFile(QString filePath)
     wallpaperRandomize_ = settings.value(QStringLiteral("WallpaperRandomize")).toBool();
     transformWallpaper_ = settings.value(QStringLiteral("TransformWallpaper")).toBool();
     perScreenWallpaper_ = settings.value(QStringLiteral("PerScreenWallpaper")).toBool();
-    desktopBgColor_.setNamedColor(settings.value(QStringLiteral("BgColor"), QStringLiteral("#000000")).toString());
-    desktopFgColor_.setNamedColor(settings.value(QStringLiteral("FgColor"), QStringLiteral("#ffffff")).toString());
-    desktopShadowColor_.setNamedColor(settings.value(QStringLiteral("ShadowColor"), QStringLiteral("#000000")).toString());
     if(settings.contains(QStringLiteral("Font"))) {
         desktopFont_.fromString(settings.value(QStringLiteral("Font")).toString());
     }
@@ -324,7 +324,8 @@ bool Settings::loadFile(QString filePath)
     return true;
 }
 
-bool Settings::saveFile(QString filePath) {
+bool Settings::saveFile(QString filePath)
+{
     QSettings settings(filePath, QSettings::IniFormat);
 
     settings.beginGroup(QStringLiteral("System"));
@@ -367,9 +368,6 @@ bool Settings::saveFile(QString filePath) {
     settings.setValue(QStringLiteral("WallpaperRandomize"), wallpaperRandomize_);
     settings.setValue(QStringLiteral("TransformWallpaper"), transformWallpaper_);
     settings.setValue(QStringLiteral("PerScreenWallpaper"), perScreenWallpaper_);
-    settings.setValue(QStringLiteral("BgColor"), desktopBgColor_.name());
-    settings.setValue(QStringLiteral("FgColor"), desktopFgColor_.name());
-    settings.setValue(QStringLiteral("ShadowColor"), desktopShadowColor_.name());
     settings.setValue(QStringLiteral("Font"), desktopFont_.toString());
     settings.setValue(QStringLiteral("DesktopIconSize"), desktopIconSize_);
     settings.setValue(QStringLiteral("DesktopShortcuts"), desktopShortcuts_);

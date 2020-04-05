@@ -22,17 +22,17 @@
 #include "launcher.h"
 
 // #include mountoperation.h>
-// #include <libfm-qt/filesearchdialog.h>
-// #include <libfm-qt/core/terminal.h>
-// #include <libfm-qt/core/bookmarks.h>
-// #include <libfm-qt/core/folderconfig.h>
 
 #include "lib/core/terminal.h"
+#include "lib/core/bookmarks.h"
+#include "lib/core/folderconfig.h"
+#include "lib/filesearchdialog.h"
 
 // Qt
 #include <QPixmapCache>
 #include <QDBusConnection>
 #include <QDBusInterface>
+#include <QDBusMessage>
 #include <QMessageBox>
 #include <QWindow>
 #include <QDebug>
@@ -45,7 +45,6 @@ static const char* ifaceName = "org.panda.Files";
 
 Application::Application(int& argc, char** argv)
     : QApplication(argc, argv),
-      m_profileName(QStringLiteral("default")),
       m_daemonMode(false),
       m_enableDesktopManager(false)
 {
@@ -120,10 +119,8 @@ void Application::launchFiles(QString cwd, QStringList paths, bool inNewWindow)
     Launcher(nullptr).launchPaths(nullptr, pathList);
 }
 
-void Application::setWallpaper(QString path, QString modeString)
+void Application::setWallpaper(QString path)
 {
-    static const char* valid_wallpaper_modes[] = {"color", "stretch", "fit", "center", "tile"};
-    DesktopWindow::WallpaperMode mode = m_settings.wallpaperMode();
     bool changed = false;
 
     if (!path.isEmpty() && path != m_settings.wallpaper()) {
@@ -133,36 +130,19 @@ void Application::setWallpaper(QString path, QString modeString)
         }
     }
 
-    // convert mode string to value
-    for(std::size_t i = 0; i < G_N_ELEMENTS(valid_wallpaper_modes); ++i) {
-        if(modeString == QLatin1String(valid_wallpaper_modes[i])) {
-            // We don't take safety checks because valid_wallpaper_modes[] is
-            // defined in this function and we can clearly see that it does not
-            // overflow.
-            mode = static_cast<DesktopWindow::WallpaperMode>(i);
-            if(mode != m_settings.wallpaperMode()) {
-                changed = true;
-            }
-            break;
-        }
-    }
+    if (!changed)
+        return;
 
     // FIXME: support different wallpapers on different screen.
     // update wallpaper
-    if(changed) {
-        if(m_enableDesktopManager) {
-            for(DesktopWindow* desktopWin :  qAsConst(m_desktopWindows)) {
-                if(!path.isEmpty()) {
-                    desktopWin->setWallpaperFile(path);
-                }
-                if(mode != m_settings.wallpaperMode()) {
-                    desktopWin->setWallpaperMode(mode);
-                }
-                desktopWin->updateWallpaper();
-                desktopWin->update();
-            }
-            m_settings.save(); // save the settings to the config file
+    if (m_enableDesktopManager) {
+        for (DesktopWindow* desktopWin :  m_desktopWindows) {
+            desktopWin->setWallpaperFile(path);
+            desktopWin->updateWallpaper();
+            desktopWin->update();
         }
+
+        m_settings.save(); // save the settings to the config file
     }
 }
 
@@ -274,21 +254,26 @@ bool Application::parseCommandLineArgs()
     QCommandLineOption newWindowOption(QStringList() << QStringLiteral("n") << QStringLiteral("new-window"), tr("Open new window"));
     parser.addOption(newWindowOption);
 
+    QCommandLineOption setWallpaperOption(QStringList() << QStringLiteral("w") << QStringLiteral("set-wallpaper"), tr("Set desktop wallpaper from image FILE"), tr("FILE"));
+    parser.addOption(setWallpaperOption);
+
     parser.addPositionalArgument(QStringLiteral("files"), tr("Files or directories to open"), tr("[FILE1, FILE2,...]"));
     parser.process(arguments());
 
     if (m_isInstance) {
         qDebug() << "is primary instance";
 
-        m_settings.load(m_profileName);
+        m_settings.load();
 
         // decrease the cache size to reduce memory usage
         QPixmapCache::setCacheLimit(2048);
 
         // desktop icon management
-        if(parser.isSet(desktopOption)) {
+        if (parser.isSet(desktopOption)) {
             desktopManager(true);
             keepRunning = true;
+        } else if(parser.isSet(setWallpaperOption)) {
+            setWallpaper(parser.value(setWallpaperOption));
         } else {
             if (!parser.isSet(desktopOption)) {
                 QStringList paths = parser.positionalArguments();
@@ -311,6 +296,8 @@ bool Application::parseCommandLineArgs()
 
         if (parser.isSet(desktopOption)) {
             iface.call(QStringLiteral("desktopManager"), true);
+        } else if(parser.isSet(setWallpaperOption)) { // set wall paper
+            iface.call("setWallpaper", parser.value(setWallpaperOption));
         } else {
             if (!parser.isSet(desktopOption)) {
                 QStringList paths = parser.positionalArguments();

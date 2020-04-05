@@ -521,46 +521,8 @@ QImage DesktopWindow::getWallpaperImage() const {
 QImage DesktopWindow::loadWallpaperFile(QSize requiredSize)
 {
     // NOTE: for ease of programming, we only use the cache for the primary screen.
-    bool useCache = (screenNum_ == -1 || screenNum_ == 0);
     QFile info;
     QString cacheFileName;
-    if(useCache) {
-        // see if we have a scaled version cached on disk
-        cacheFileName = QString::fromLocal8Bit(qgetenv("XDG_CACHE_HOME"));
-        if(cacheFileName.isEmpty()) {
-            cacheFileName = QDir::homePath() + QLatin1String("/.cache");
-        }
-        Application* app = static_cast<Application*>(qApp);
-        cacheFileName += QLatin1String("/panda-files/") + app->profileName();
-        QDir().mkpath(cacheFileName); // ensure that the cache dir exists
-        cacheFileName += QLatin1String("/wallpaper.cache");
-
-        // read info file
-        QString origin;
-        info.setFileName(cacheFileName + QStringLiteral(".info"));
-        if(info.open(QIODevice::ReadOnly)) {
-            // FIXME: we need to compare mtime to see if the cache is out of date
-            origin = QString::fromLocal8Bit(info.readLine());
-            info.close();
-            if(!origin.isEmpty()) {
-                // try to see if we can get the size of the cached image.
-                QImageReader reader(cacheFileName);
-                reader.setAutoDetectImageFormat(true);
-                QSize cachedSize = reader.size();
-                qDebug() << "size of cached file" << cachedSize << ", requiredSize:" << requiredSize;
-                if(cachedSize.isValid()) {
-                    if(cachedSize == requiredSize) { // see if the cached wallpaper has the size we want
-                        QImage image = reader.read(); // return the loaded image
-                        qDebug() << "origin" << origin;
-                        if(origin == wallpaperFile_) {
-                            return image;
-                        }
-                    }
-                }
-            }
-        }
-        qDebug() << "no cached wallpaper. generate a new one!";
-    }
 
     // we don't have a cached scaled image, load the original file
     QImage image = getWallpaperImage();
@@ -573,30 +535,12 @@ QImage DesktopWindow::loadWallpaperFile(QSize requiredSize)
     QImage scaled = image.scaled(requiredSize.width(), requiredSize.height(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
     // FIXME: should we save the scaled image if its size is larger than the original image?
 
-    if(useCache) {
-        // write the path of the original image to the .info file
-        if(info.open(QIODevice::WriteOnly)) {
-            info.write(wallpaperFile_.toLocal8Bit());
-            info.close();
-
-            // write the scaled cache image to disk
-            const char* format; // we keep jpg format for *.jpg files, and use png format for others.
-            if(wallpaperFile_.endsWith(QLatin1String(".jpg"), Qt::CaseInsensitive) || wallpaperFile_.endsWith(QLatin1String(".jpeg"), Qt::CaseInsensitive)) {
-                format = "JPG";
-            }
-            else {
-                format = "PNG";
-            }
-            scaled.save(cacheFileName, format);
-        }
-        qDebug() << "wallpaper cached saved to " << cacheFileName;
-        // FIXME: we might delay the write of the cached image?
-    }
     return scaled;
 }
 
 // really generate the background pixmap according to current settings and apply it.
-void DesktopWindow::updateWallpaper() {
+void DesktopWindow::updateWallpaper()
+{
     if(wallpaperMode_ != WallpaperNone) {  // use wallpaper
         QPixmap pixmap;
         QImage image;
@@ -815,7 +759,7 @@ void DesktopWindow::updateFromSettings(Settings& settings, bool changeSlide)
 {
     setDesktopFolder();
     setWallpaperFile(settings.wallpaper());
-    setWallpaperMode(settings.wallpaperMode());
+    setWallpaperMode(WallpaperStretch);
     setLastSlide(settings.lastSlide());
     QString wallpaperDir = settings.wallpaperDir();
     if(wallpaperDir_ != wallpaperDir) {
@@ -1321,7 +1265,7 @@ void DesktopWindow::loadItemPositions() {
     // load custom item positions
     customItemPos_.clear();
     Settings& settings = static_cast<Application*>(qApp)->settings();
-    QString configFile = QStringLiteral("%1/desktop-items-%2.conf").arg(settings.profileDir(settings.profileName())).arg(screenNum_);
+    QString configFile = QStringLiteral("desktop-items-%2.conf").arg(screenNum_);
     QSettings file(configFile, QSettings::IniFormat);
 
     auto delegate = static_cast<Fm::FolderItemDelegate*>(listView_->itemDelegateForColumn(0));
@@ -1370,7 +1314,7 @@ void DesktopWindow::loadItemPositions() {
 void DesktopWindow::saveItemPositions() {
     Settings& settings = static_cast<Application*>(qApp)->settings();
     // store custom item positions
-    QString configFile = QStringLiteral("%1/desktop-items-%2.conf").arg(settings.profileDir(settings.profileName())).arg(screenNum_);
+    QString configFile = QStringLiteral("desktop-items-%2.conf").arg(screenNum_);
     // FIXME: using QSettings here is inefficient and it's not friendly to UTF-8.
     QSettings file(configFile, QSettings::IniFormat);
     file.clear(); // remove all existing entries

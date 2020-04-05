@@ -38,7 +38,7 @@ public:
 
     // public interface exported via dbus
     void launchFiles(QString cwd, QStringList paths, bool inNewWindow);
-    void setWallpaper(QString path, QString modeString);
+    void setWallpaper(QString path);
     void preferences(QString page);
     void desktopPrefrences(QString page);
     void editBookmarks();
@@ -50,8 +50,6 @@ public:
     void openFolderInTerminal(Fm::FilePath path);
 
     bool desktopManagerEnabled() { return false; }
-
-    QString profileName() { return m_profileName; }
 
     Settings &settings() { return m_settings; };
 
@@ -75,7 +73,6 @@ private:
 
 private:
     Settings m_settings;
-    QString m_profileName;
     bool m_isInstance;
     bool m_daemonMode;
     bool m_enableDesktopManager;
