@@ -301,7 +301,7 @@ void FolderItemDelegate::drawText(QPainter* painter, QStyleOptionViewItem& opt, 
             // if part of this line falls outside the textRect, ignore it and quit.
             QTextLine lastLine = layout.lineAt(visibleLines - 1);
             elidedText = opt.text.mid(lastLine.textStart());
-            elidedText = opt.fontMetrics.elidedText(elidedText, opt.textElideMode, textRect.width());
+            elidedText = opt.fontMetrics.elidedText(elidedText, Qt::ElideMiddle, textRect.width());
             if(visibleLines == 1) { // this is the only visible line
                 width = textRect.width();
             }
@@ -333,34 +333,6 @@ void FolderItemDelegate::drawText(QPainter* painter, QStyleOptionViewItem& opt, 
         return;
     }
 
-    // Respect the active and inactive palettes (some styles can use different colors for them).
-    // Also, take into account a probable disabled palette.
-    // QPalette::ColorGroup cg = (opt.state & QStyle::State_Enabled)
-    //                               ? (opt.state & QStyle::State_Active)
-    //                                   ? QPalette::Active
-    //                                   : QPalette::Inactive
-    //                               : QPalette::Disabled;
-    // if(opt.state & QStyle::State_Selected) {
-    //     if(!opt.widget) {
-    //         painter->fillRect(selRect, opt.palette.highlight());
-    //     }
-    //     painter->setPen(opt.palette.color(cg, QPalette::HighlightedText));
-    // }
-    // else {
-    //     painter->setPen(opt.palette.color(cg, QPalette::Text));
-    // }
-
-    // if(opt.state & QStyle::State_Selected || opt.state & QStyle::State_MouseOver) {
-    //     if(const QWidget* widget = opt.widget) {  // let the style engine do it
-    //         QStyle* style = widget->style() ? widget->style() : qApp->style();
-    //         QStyleOptionViewItem o(opt);
-    //         o.text = QString();
-    //         o.rect = selRect.toAlignedRect().intersected(opt.rect); // due to clipping and rounding, we might lose 1px
-    //         o.showDecorationSelected = true;
-    //         style->drawPrimitive(QStyle::PE_PanelItemViewItem, &o, painter, widget);
-    //     }
-    // }
-
     // draw shadow for text if the item is not selected and a shadow color is set
     if(!(opt.state & QStyle::State_Selected) && shadowColor_.isValid()) {
         QPen prevPen = painter->pen();
@@ -389,24 +361,6 @@ void FolderItemDelegate::drawText(QPainter* painter, QStyleOptionViewItem& opt, 
             line.draw(painter, textRect.topLeft());
         }
     }
-
-    // rekols: 去除focus背景颜色
-//    if(opt.state & QStyle::State_HasFocus) {
-//        // draw focus rect
-//        QStyleOptionFocusRect o;
-//        o.QStyleOption::operator=(opt);
-//        o.rect = selRect.toRect(); // subElementRect(SE_ItemViewItemFocusRect, vopt, widget);
-//        o.state |= QStyle::State_KeyboardFocusChange;
-//        o.state |= QStyle::State_Item;
-//        QPalette::ColorGroup cg = (opt.state & QStyle::State_Enabled)
-//                                  ? QPalette::Normal : QPalette::Disabled;
-//        o.backgroundColor = opt.palette.color(cg, (opt.state & QStyle::State_Selected)
-//                                              ? QPalette::Highlight : QPalette::Window);
-//        if(const QWidget* widget = opt.widget) {
-//            QStyle* style = widget->style() ? widget->style() : qApp->style();
-//            style->drawPrimitive(QStyle::PE_FrameFocusRect, &o, painter, widget);
-//        }
-//    }
 }
 
 /*

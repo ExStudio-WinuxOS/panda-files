@@ -1180,7 +1180,7 @@ void FolderView::updateGridSize() {
 //        // let horizontal and vertical spacings be set only by itemDelegateMargins_
 //        listView->setSpacing(0);
 
-        int textHeight = fm.lineSpacing() * 3;
+        int textHeight = fm.lineSpacing() * 2.5;
         int gridSize = icon.height() + textHeight + 4;
         grid.setWidth(gridSize + itemDelegateMargins_.height() * 2);
         grid.setHeight(gridSize + itemDelegateMargins_.height() * 2);
