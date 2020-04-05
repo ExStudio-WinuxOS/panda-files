@@ -123,16 +123,24 @@ MainWindow::MainWindow(Fm::FilePath path)
       m_pathEntry(nullptr),
       m_pathBar(nullptr),
       m_bookmarks(Fm::Bookmarks::globalInstance()),
-      m_activeViewFrame(nullptr)
+      m_activeViewFrame(nullptr),
+      m_addressBar(new QToolBar)
 {
     QVBoxLayout *layout = new QVBoxLayout;
     QWidget *widget = new QWidget;
     widget->setLayout(layout);
     setCentralWidget(widget);
 
+    layout->setMargin(0);
+    layout->setSpacing(0);
+    layout->addWidget(m_addressBar);
+
     Settings &settings = static_cast<Application *>(qApp)->settings();
 
     setAttribute(Qt::WA_DeleteOnClose);
+
+    ViewFrame* viewFrame = new ViewFrame();
+    layout->addWidget(viewFrame);
 }
 
 MainWindow::~MainWindow()

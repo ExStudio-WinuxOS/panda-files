@@ -957,21 +957,24 @@ void DesktopWindow::addDesktopActions(QMenu* menu)
     // connect(action, &QAction::triggered, this, &DesktopWindow::onDesktopPreferences);
 }
 
-void DesktopWindow::toggleDesktop() {
+void DesktopWindow::toggleDesktop() 
+{
     desktopHideItems_ = !desktopHideItems_;
     Settings& settings = static_cast<Application*>(qApp)->settings();
     settings.setDesktopHideItems(desktopHideItems_);
     listView_->setVisible(!desktopHideItems_);
+
     // a relayout is needed on showing the items for the first time
     // because the positions aren't updated while the view is hidden
-    if(!desktopHideItems_) {
+    if (!desktopHideItems_) {
         listView_->setFocus(); // refocus the view
         queueRelayout();
-    }
-    else {
+    } else {
         listView_->clearFocus(); // prevent the current item from being changed by arrow keys
         setCursor(Qt::ArrowCursor); // ensure arrow cursor on an empty desktop
     }
+
+    settings.save();
 }
 
 void DesktopWindow::selectAll() {

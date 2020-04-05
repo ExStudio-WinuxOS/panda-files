@@ -53,7 +53,8 @@ FolderItemDelegate::~FolderItemDelegate() {
 
 }
 
-QSize FolderItemDelegate::iconViewTextSize(const QModelIndex& index) const {
+QSize FolderItemDelegate::iconViewTextSize(const QModelIndex& index) const
+{
     QStyleOptionViewItem opt;
     initStyleOption(&opt, index);
     opt.decorationSize = iconSize_.isValid() ? iconSize_ : QSize(0, 0);
@@ -66,14 +67,15 @@ QSize FolderItemDelegate::iconViewTextSize(const QModelIndex& index) const {
     return textRect.toRect().size();
 }
 
-QSize FolderItemDelegate::sizeHint(const QStyleOptionViewItem& option, const QModelIndex& index) const {
+QSize FolderItemDelegate::sizeHint(const QStyleOptionViewItem& option, const QModelIndex& index) const
+{
     QVariant value = index.data(Qt::SizeHintRole);
-    if(value.isValid()) {
+    if (value.isValid()) {
         // no further processing if the size is specified by the data model
         return qvariant_cast<QSize>(value);
     }
 
-    if(option.decorationPosition == QStyleOptionViewItem::Top ||
+    if (option.decorationPosition == QStyleOptionViewItem::Top ||
             option.decorationPosition == QStyleOptionViewItem::Bottom) {
         // we handle vertical layout just by returning our item size
         return itemSize_;
@@ -100,14 +102,15 @@ QIcon::Mode FolderItemDelegate::iconModeFromState(const QStyle::State state) {
     return QIcon::Disabled;
 }
 
-void FolderItemDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const {
-    if(!index.isValid())
+void FolderItemDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const
+{
+    if (!index.isValid())
         return;
 
     // get emblems for this icon
     std::forward_list<std::shared_ptr<const Fm::IconInfo>> icon_emblems;
     auto fmicon = index.data(iconInfoRole_).value<std::shared_ptr<const Fm::IconInfo>>();
-    if(fmicon) {
+    if (fmicon) {
         icon_emblems = fmicon->emblems();
     }
     // get file info for the item
@@ -119,7 +122,7 @@ void FolderItemDelegate::paint(QPainter* painter, const QStyleOptionViewItem& op
 
     // distinguish the hidden items visually by making their texts italic
     bool shadowIcon(false);
-    if(file && file->isHidden()) {
+    if (file && file->isHidden()) {
         QFont f(opt.font);
         f.setItalic(true);
         opt.font = f;
@@ -130,7 +133,7 @@ void FolderItemDelegate::paint(QPainter* painter, const QStyleOptionViewItem& op
     bool isCut = index.data(FolderModel::FileIsCutRole).toBool();
     // an emblem is added only to an untrusted, deletable desktop file that isn't inside applications directory
     bool untrusted = file && !file->isTrustable() && file->isDesktopEntry() && file->isDeletable();
-    if(untrusted) {
+    if (untrusted) {
         auto parentDir = QString::fromUtf8((file->dirPath().toString().get()));
         if(QStandardPaths::standardLocations(QStandardPaths::ApplicationsLocation).contains(parentDir)) {
             untrusted = false;
@@ -146,6 +149,7 @@ void FolderItemDelegate::paint(QPainter* painter, const QStyleOptionViewItem& op
         painter->setClipRect(option.rect);
 
         QRect roundedRect = option.rect.marginsRemoved(QMargins(5, 5, 5, 5));
+        const qreal radius = qMin(option.rect.width(), option.rect.height()) * 0.1;
 
         opt.decorationAlignment = Qt::AlignHCenter | Qt::AlignTop;
         opt.displayAlignment = Qt::AlignTop | Qt::AlignHCenter;
@@ -158,7 +162,7 @@ void FolderItemDelegate::paint(QPainter* painter, const QStyleOptionViewItem& op
             } else {
                 painter->setBrush(QColor(0, 158, 255, 100));
             }
-            painter->drawRoundedRect(roundedRect, 10, 10);
+            painter->drawRoundedRect(roundedRect, radius, radius);
             painter->restore();
         }
 
@@ -166,79 +170,46 @@ void FolderItemDelegate::paint(QPainter* painter, const QStyleOptionViewItem& op
         QIcon::Mode iconMode = shadowIcon ? QIcon::Disabled
                                           // in the icon and thumbnail modes, we select text, not icon
                                           : iconModeFromState(opt.state & ~QStyle::State_Selected);
-        QPoint iconPos(roundedRect.x() + (roundedRect.width() - option.decorationSize.width()) / 2, roundedRect.y() + margins_.height());
+        QPoint iconPos(roundedRect.x() + (roundedRect.width() - option.decorationSize.width()) / 2,
+                       roundedRect.y() + margins_.height());
         QPixmap pixmap = opt.icon.pixmap(option.decorationSize, iconMode);
         // in case the pixmap is smaller than the requested size
         QSize margin = ((option.decorationSize - pixmap.size()) / 2).expandedTo(QSize(0, 0));
-        if(isCut) {
+        if (isCut) {
             painter->save();
             painter->setOpacity(0.45);
         }
         painter->drawPixmap(iconPos + QPoint(margin.width(), margin.height()), pixmap);
-        if(isCut) {
+        if (isCut) {
             painter->restore();
         }
 
         // draw some emblems for the item if needed
-        if(isSymlink) {
+        if (isSymlink) {
             // draw the emblem for symlinks
             painter->drawPixmap(iconPos, symlinkIcon_.pixmap(option.decorationSize / 2, iconMode));
         }
 
-        if(untrusted) {
+        if (untrusted) {
             // emblem for untrusted, deletable desktop files
             painter->drawPixmap(iconPos.x(), roundedRect.y() + option.decorationSize.height() / 2, untrustedIcon_.pixmap(option.decorationSize / 2, iconMode));
         }
 
         // draw other emblems if there's any
-        if(!emblems.empty()) {
+        if (!emblems.empty()) {
             // FIXME: we only support one emblem now
             QPoint emblemPos(roundedRect.x() + roundedRect.width() / 2, roundedRect.y() + option.decorationSize.height() / 2);
             QIcon emblem = emblems.front()->qicon();
             painter->drawPixmap(emblemPos, emblem.pixmap(option.decorationSize / 2, iconMode));
         }
 
-        // Draw select/deselect icons outside the main icon but near its top left corner,
-        // with its 1/3 size and only if the icon size isn't smaller than 48 px
-        // (otherwise, the user could not click on them easily).
-        // rekols: 移除左上角图标
-        // const QAbstractItemView* iv = qobject_cast<const QAbstractItemView*>(opt.widget);
-        // if(iv != nullptr
-        //    // only for the extended and multiple selection modes
-        //    && (iv->selectionMode() == QAbstractItemView::ExtendedSelection
-        //        || iv->selectionMode() == QAbstractItemView::MultiSelection)
-        //    && option.decorationSize.width() >= 48 && (opt.state & QStyle::State_MouseOver)) {
-        //     int s = option.decorationSize.width() / 3;
-        //     bool cursorOnSelectionCorner = false;
-        //     iconPos = QPoint(qMax(opt.rect.x(), iconPos.x() - s),
-        //                      qMax(opt.rect.y(), iconPos.y() - s));
-        //     QPoint curPos = iv->viewport()->mapFromGlobal(QCursor::pos());
-        //     if(curPos.x() >= iconPos.x() && curPos.x() <= iconPos.x() + s
-        //        && curPos.y() >= iconPos.y() && curPos.y() <= iconPos.y() + s) {
-        //         cursorOnSelectionCorner = true;
-        //     }
-        //     if(!cursorOnSelectionCorner) { // make it translucent when not under the cursor
-        //         painter->save();
-        //         painter->setOpacity(0.6);
-        //     }
-        //     if(opt.state & QStyle::State_Selected) {
-        //         painter->drawPixmap(iconPos, removeIcon_.pixmap(QSize(s, s), QIcon::Normal));
-        //     }
-        //     else {
-        //         painter->drawPixmap(iconPos, addIcon_.pixmap(QSize(s, s), QIcon::Normal));
-        //     }
-        //     if(!cursorOnSelectionCorner) {
-        //         painter->restore();
-        //     }
-        // }
-
         // draw the text
-        QSize drawAreaSize = itemSize_ - 2 * margins_ * 2;
-        // The text rect dimensions should be exactly as they were in sizeHint()
-        QRectF textRect(roundedRect.x() + (roundedRect.width() - drawAreaSize.width()) / 2,
+        QRectF textRect(roundedRect.x(),
                         roundedRect.y() + margins_.height() + option.decorationSize.height(),
-                        drawAreaSize.width(),
-                        drawAreaSize.height() - option.decorationSize.height());
+                        roundedRect.width() - 20,
+                        roundedRect.height() - option.decorationSize.height() - margins_.height() * 2);
+        textRect.setX(roundedRect.x() + 10);
+        textRect.setWidth(roundedRect.width() - 20);
         drawText(painter, opt, textRect);
         painter->restore();
     }
@@ -298,7 +269,8 @@ void FolderItemDelegate::paint(QPainter* painter, const QStyleOptionViewItem& op
 }
 
 // if painter is nullptr, the method calculate the bounding rectangle of the text and save it to textRect
-void FolderItemDelegate::drawText(QPainter* painter, QStyleOptionViewItem& opt, QRectF& textRect) const {
+void FolderItemDelegate::drawText(QPainter* painter, QStyleOptionViewItem& opt, QRectF& textRect) const
+{
     QTextLayout layout(opt.text, opt.font);
     QTextOption textOption;
     textOption.setAlignment(opt.displayAlignment);
@@ -316,7 +288,7 @@ void FolderItemDelegate::drawText(QPainter* painter, QStyleOptionViewItem& opt, 
     int visibleLines = 0;
     layout.beginLayout();
     QString elidedText;
-    textRect.adjust(2, 2, -2, -2); // a 2-px margin is considered at FolderView::updateGridSize()
+    // textRect.adjust(2, 2, -2, -2); // a 2-px margin is considered at FolderView::updateGridSize()
     for(;;) {
         QTextLine line = layout.createLine();
         if(!line.isValid()) {

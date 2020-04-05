@@ -22,6 +22,7 @@
 
 #include <QMainWindow>
 #include <QStackedWidget>
+#include <QToolBar>
 #include <QTabBar>
 
 #include "settings.h"
@@ -99,6 +100,8 @@ private:
     ViewFrame *m_activeViewFrame;
 
     Launcher m_fileLauncher;
+
+    QToolBar *m_addressBar;
 };
 
 #endif

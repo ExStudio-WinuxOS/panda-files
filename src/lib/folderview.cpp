@@ -1171,13 +1171,19 @@ void FolderView::updateGridSize() {
         // each char actually takes doubled space. To be safe, we use 13 chars per line x average char width
         // to get a nearly optimal width for the text label. As most of the filenames have less than 40 chars
         // 13 chars x 3 lines should be enough to show the full filenames for most files.
-        int textWidth = fm.averageCharWidth() * 13;
+//        int textWidth = fm.averageCharWidth() * 13;
+//        int textHeight = fm.lineSpacing() * 3;
+//        grid.setWidth(qMax(icon.width(), textWidth) + 4); // a margin of 2 px for selection rects
+//        grid.setHeight(icon.height() + textHeight + 4); // a margin of 2 px for selection rects
+//        // grow to include margins
+//        grid += 2*itemDelegateMargins_;
+//        // let horizontal and vertical spacings be set only by itemDelegateMargins_
+//        listView->setSpacing(0);
+
         int textHeight = fm.lineSpacing() * 3;
-        grid.setWidth(qMax(icon.width(), textWidth) + 4); // a margin of 2 px for selection rects
-        grid.setHeight(icon.height() + textHeight + 4); // a margin of 2 px for selection rects
-        // grow to include margins
-        grid += 2*itemDelegateMargins_;
-        // let horizontal and vertical spacings be set only by itemDelegateMargins_
+        int gridSize = icon.height() + textHeight + 4;
+        grid.setWidth(gridSize + itemDelegateMargins_.height() * 2);
+        grid.setHeight(gridSize + itemDelegateMargins_.height() * 2);
         listView->setSpacing(0);
 
         break;
