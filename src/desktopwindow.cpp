@@ -25,6 +25,7 @@
 #include <QPaintEvent>
 #include <QStandardPaths>
 #include <QClipboard>
+#include <QWheelEvent>
 #include <QWindow>
 
 #include "lib/foldermenu.h"
@@ -434,6 +435,18 @@ void DesktopWindow::resizeEvent(QResizeEvent* event) {
         update();
     }
     queueRelayout(100); // Qt use a 100 msec delay for relayout internally so we use it, too.
+}
+
+void DesktopWindow::wheelEvent(QWheelEvent *event)
+{
+    QWidget::wheelEvent(event);
+
+    if (event->modifiers().testFlag(Qt::ControlModifier)) {
+        if (event->delta() > 0)
+            QTimer::singleShot(50, this, &DesktopWindow::increaseIconSize);
+        else
+            QTimer::singleShot(50, this, &DesktopWindow::decreaseIconSize);
+    }
 }
 
 void DesktopWindow::setDesktopFolder() {
@@ -1861,6 +1874,40 @@ void DesktopWindow::setScreenNum(int num) {
     if(screenNum_ != num) {
         screenNum_ = num;
         queueRelayout();
+    }
+}
+
+void DesktopWindow::increaseIconSize()
+{
+    Settings &settings = static_cast<Application* >(qApp)->settings();
+    int size = qMin(maxIconSize_,  settings.desktopIconSize() + 16);
+
+    if (size != settings.desktopIconSize()) {
+        setIconSize(Fm::FolderView::IconMode, QSize(size, size));
+        setMargins(settings.desktopCellMargins());
+
+        settings.setDesktopIconSize(size);
+        settings.save();
+
+        queueRelayout();
+        update();
+    }
+}
+
+void DesktopWindow::decreaseIconSize()
+{
+    Settings &settings = static_cast<Application* >(qApp)->settings();
+    int size = qMax(minIconSize_,  settings.desktopIconSize() - 16);
+
+    if (size != settings.desktopIconSize()) {
+        setIconSize(Fm::FolderView::IconMode, QSize(size, size));
+        setMargins(settings.desktopCellMargins());
+
+        settings.setDesktopIconSize(size);
+        settings.save();
+
+        queueRelayout();
+        update();
     }
 }
 

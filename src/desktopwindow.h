@@ -64,6 +64,8 @@ public:
     }
 
     void setScreenNum(int num);
+    void increaseIconSize();
+    void decreaseIconSize();
 
     QScreen* getDesktopScreen() const;
 
@@ -71,6 +73,7 @@ protected:
     virtual void prepareFolderMenu(Fm::FolderMenu* menu) override;
     virtual void prepareFileMenu(Fm::FileMenu* menu) override;
     virtual void resizeEvent(QResizeEvent* event) override;
+    virtual void wheelEvent(QWheelEvent *event) override;
     virtual void onFileClicked(int type, const std::shared_ptr<const Fm::FileInfo>& fileInfo) override;
 
     void loadItemPositions();
@@ -173,6 +176,9 @@ private:
     GFileMonitor* trashMonitor_;
 
     QStringList filesToTrust_;
+
+    int minIconSize_ = 48;
+    int maxIconSize_ = 96;
 };
 
 #endif // DESKTOPWINDOW_H

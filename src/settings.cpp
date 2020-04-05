@@ -169,7 +169,6 @@ bool Settings::load(QString profile)
 
 bool Settings::save(QString profile)
 {
-    qDebug() << "save settings";
     return saveFile(profilePath_);
 }
 
