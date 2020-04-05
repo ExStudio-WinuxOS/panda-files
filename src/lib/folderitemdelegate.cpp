@@ -145,6 +145,8 @@ void FolderItemDelegate::paint(QPainter* painter, const QStyleOptionViewItem& op
         painter->save();
         painter->setClipRect(option.rect);
 
+        QRect roundedRect = option.rect.marginsRemoved(QMargins(5, 5, 5, 5));
+
         opt.decorationAlignment = Qt::AlignHCenter | Qt::AlignTop;
         opt.displayAlignment = Qt::AlignTop | Qt::AlignHCenter;
 
@@ -152,7 +154,7 @@ void FolderItemDelegate::paint(QPainter* painter, const QStyleOptionViewItem& op
             painter->save();
             painter->setPen(Qt::NoPen);
             painter->setBrush(QColor(0, 158, 255, 200));
-            painter->drawRoundedRect(option.rect.marginsRemoved(QMargins(5, 5, 5, 5)), 10, 10);
+            painter->drawRoundedRect(roundedRect, 10, 10);
             painter->restore();
         }
 
@@ -160,7 +162,7 @@ void FolderItemDelegate::paint(QPainter* painter, const QStyleOptionViewItem& op
         QIcon::Mode iconMode = shadowIcon ? QIcon::Disabled
                                           // in the icon and thumbnail modes, we select text, not icon
                                           : iconModeFromState(opt.state & ~QStyle::State_Selected);
-        QPoint iconPos(opt.rect.x() + (opt.rect.width() - option.decorationSize.width()) / 2, opt.rect.y() + margins_.height());
+        QPoint iconPos(roundedRect.x() + (roundedRect.width() - option.decorationSize.width()) / 2, roundedRect.y() + margins_.height());
         QPixmap pixmap = opt.icon.pixmap(option.decorationSize, iconMode);
         // in case the pixmap is smaller than the requested size
         QSize margin = ((option.decorationSize - pixmap.size()) / 2).expandedTo(QSize(0, 0));
@@ -181,13 +183,13 @@ void FolderItemDelegate::paint(QPainter* painter, const QStyleOptionViewItem& op
 
         if(untrusted) {
             // emblem for untrusted, deletable desktop files
-            painter->drawPixmap(iconPos.x(), opt.rect.y() + option.decorationSize.height() / 2, untrustedIcon_.pixmap(option.decorationSize / 2, iconMode));
+            painter->drawPixmap(iconPos.x(), roundedRect.y() + option.decorationSize.height() / 2, untrustedIcon_.pixmap(option.decorationSize / 2, iconMode));
         }
 
         // draw other emblems if there's any
         if(!emblems.empty()) {
             // FIXME: we only support one emblem now
-            QPoint emblemPos(opt.rect.x() + opt.rect.width() / 2, opt.rect.y() + option.decorationSize.height() / 2);
+            QPoint emblemPos(roundedRect.x() + roundedRect.width() / 2, roundedRect.y() + option.decorationSize.height() / 2);
             QIcon emblem = emblems.front()->qicon();
             painter->drawPixmap(emblemPos, emblem.pixmap(option.decorationSize / 2, iconMode));
         }
@@ -227,10 +229,10 @@ void FolderItemDelegate::paint(QPainter* painter, const QStyleOptionViewItem& op
         // }
 
         // draw the text
-        QSize drawAreaSize = itemSize_ - 2 * margins_;
+        QSize drawAreaSize = itemSize_ - 2 * margins_ * 2;
         // The text rect dimensions should be exactly as they were in sizeHint()
-        QRectF textRect(opt.rect.x() + (opt.rect.width() - drawAreaSize.width()) / 2,
-                        opt.rect.y() + margins_.height() + option.decorationSize.height(),
+        QRectF textRect(roundedRect.x() + (roundedRect.width() - drawAreaSize.width()) / 2,
+                        roundedRect.y() + margins_.height() + option.decorationSize.height(),
                         drawAreaSize.width(),
                         drawAreaSize.height() - option.decorationSize.height());
         drawText(painter, opt, textRect);
