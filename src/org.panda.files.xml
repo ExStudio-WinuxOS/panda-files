@@ -23,6 +23,8 @@
     <method name="findFiles">
       <arg type="as" direction="in"/>
     </method>
+    <signal name="wallpaperChanged"></signal>
     <property name="desktopManagerEnabled" type="b" access="read"/>
+    <property name="wallpaper" type="s" access="read"/>
   </interface>
 </node>

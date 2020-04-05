@@ -109,22 +109,23 @@ set(LIB_UIS
     lib/filedialog.ui
 )
 
-qt5_add_dbus_adaptor(DBUS_SRCS
-  org.panda.files.xml
-  application.h
-  Application
-  applicationadaptor
-  ApplicationAdaptor
-)
+#qt5_add_dbus_adaptor(DBUS_SRCS
+#  org.panda.files.xml
+#  application.h
+#  Application
+#  applicationadaptor
+#  ApplicationAdaptor
+#)
 
 # qt5_add_dbus_adaptor() already generated the moc files. It also marked the
 # files with SKIP_AUTOMOC but we still need to mark them witk SKIP_AUTOGEN.
 # TODO: Check if this behaviour is a CMake bug.
-set_source_files_properties(${DBUS_SRCS} PROPERTIES SKIP_AUTOGEN ON)
+# set_source_files_properties(${DBUS_SRCS} PROPERTIES SKIP_AUTOGEN ON)
 
 set(SRCS
   main.cpp
   application.cpp
+  applicationadaptor.cpp
   mainwindow.cpp
   tabbar.cpp
   view.cpp
@@ -135,7 +136,7 @@ set(SRCS
   xdgdir.cpp
 )
 
-set(SOURCES ${LIB_SRCS} ${LIB_UIS} ${DBUS_SRCS} ${SRCS})
+set(SOURCES ${LIB_SRCS} ${LIB_UIS} ${SRCS})
 
 add_executable(${TARGET_NAME} ${SOURCES})
 target_link_libraries(${TARGET_NAME}

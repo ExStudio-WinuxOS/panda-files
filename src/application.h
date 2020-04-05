@@ -28,6 +28,7 @@ class Application : public QApplication
 {
     Q_OBJECT
     Q_PROPERTY(bool desktopManagerEnabled READ desktopManagerEnabled)
+    Q_PROPERTY(QString wallpaper READ wallpaper)
 
 public:
     Application(int& argc, char** argv);
@@ -49,7 +50,8 @@ public:
     void openFolders(Fm::FileInfoList files);
     void openFolderInTerminal(Fm::FilePath path);
 
-    bool desktopManagerEnabled() { return false; }
+    bool desktopManagerEnabled() { return m_enableDesktopManager; }
+    QString wallpaper() { return m_settings.wallpaper(); }
 
     Settings &settings() { return m_settings; };
 
