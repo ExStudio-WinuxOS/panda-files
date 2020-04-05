@@ -150,10 +150,14 @@ void FolderItemDelegate::paint(QPainter* painter, const QStyleOptionViewItem& op
         opt.decorationAlignment = Qt::AlignHCenter | Qt::AlignTop;
         opt.displayAlignment = Qt::AlignTop | Qt::AlignHCenter;
 
-        if (opt.state & QStyle::State_Selected) {
+        if (opt.state & QStyle::State_Selected || opt.state & QStyle::State_MouseOver) {
             painter->save();
             painter->setPen(Qt::NoPen);
-            painter->setBrush(QColor(0, 158, 255, 200));
+            if (opt.state & QStyle::State_Selected) {
+                painter->setBrush(QColor(0, 158, 255, 200));
+            } else {
+                painter->setBrush(QColor(0, 158, 255, 100));
+            }
             painter->drawRoundedRect(roundedRect, 10, 10);
             painter->restore();
         }
