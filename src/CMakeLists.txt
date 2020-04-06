@@ -169,3 +169,5 @@ target_compile_definitions(${TARGET_NAME}
             "GETTEXT_PACKAGE=\"\""
     PUBLIC "QT_NO_KEYWORDS"
 )
+
+install(TARGETS ${TARGET_NAME} DESTINATION /usr/bin)

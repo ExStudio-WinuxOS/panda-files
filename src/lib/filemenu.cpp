@@ -83,8 +83,8 @@ FileMenu::FileMenu(Fm::FileInfoList files, std::shared_ptr<const Fm::FileInfo> i
 
     openWithMenuAction_ = new QAction(tr("Open With..."), this);
     // rekols: 如果是目录则不支持用其他方式打开
-    if (!mime_type->isDir())
-        addAction(openWithMenuAction_);
+    // if (!mime_type->isDir())
+    addAction(openWithMenuAction_);
     // create the "Open with..." sub menu
     QMenu* menu = new QMenu(this);
     openWithMenuAction_->setMenu(menu);

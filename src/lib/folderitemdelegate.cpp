@@ -158,9 +158,9 @@ void FolderItemDelegate::paint(QPainter* painter, const QStyleOptionViewItem& op
             painter->save();
             painter->setPen(Qt::NoPen);
             if (opt.state & QStyle::State_Selected) {
-                painter->setBrush(QColor(0, 158, 255, 200));
+                painter->setBrush(QColor(80, 150, 250, 200));
             } else {
-                painter->setBrush(QColor(0, 158, 255, 100));
+                painter->setBrush(QColor(80, 150, 250, 80));
             }
             painter->drawRoundedRect(roundedRect, radius, radius);
             painter->restore();
