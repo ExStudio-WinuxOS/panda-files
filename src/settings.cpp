@@ -28,11 +28,9 @@ inline static Qt::SortOrder sortOrderFromString(const QString str);
 inline static const char* sortColumnToString(Fm::FolderModel::ColumnId value);
 inline static Fm::FolderModel::ColumnId sortColumnFromString(const QString str);
 
-// supportTrash_(Fm::uriExists("trash:///"))
-
 Settings::Settings():
     QObject(),
-    supportTrash_(true), // check if trash:/// is supported
+    supportTrash_(Fm::uriExists("trash:///")), // check if trash:/// is supported
     fallbackIconThemeName_(),
     useFallbackIconTheme_(QIcon::themeName().isEmpty() || QIcon::themeName() == QLatin1String("hicolor")),
     bookmarkOpenMethod_(OpenInCurrentTab),
@@ -162,7 +160,7 @@ QString Settings::profileDir(QString profile, bool useFallback) {
     return dirName;
 }
 
-bool Settings::load(QString profile)
+bool Settings::load()
 {
     return loadFile(profilePath_);
 }

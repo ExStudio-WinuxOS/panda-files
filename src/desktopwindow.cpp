@@ -1281,7 +1281,7 @@ void DesktopWindow::loadItemPositions() {
     // load custom item positions
     customItemPos_.clear();
     Settings& settings = static_cast<Application*>(qApp)->settings();
-    QString configFile = QStringLiteral("desktop-items-%2.conf").arg(screenNum_);
+    QString configFile = QStringLiteral("%1/desktop-items-%2.conf").arg(settings.profileDir()).arg(screenNum_);
     QSettings file(configFile, QSettings::IniFormat);
 
     auto delegate = static_cast<Fm::FolderItemDelegate*>(listView_->itemDelegateForColumn(0));
@@ -1330,7 +1330,7 @@ void DesktopWindow::loadItemPositions() {
 void DesktopWindow::saveItemPositions() {
     Settings& settings = static_cast<Application*>(qApp)->settings();
     // store custom item positions
-    QString configFile = QStringLiteral("desktop-items-%2.conf").arg(screenNum_);
+    QString configFile = QStringLiteral("%1/desktop-items-%2.conf").arg(settings.profileDir()).arg(screenNum_);
     // FIXME: using QSettings here is inefficient and it's not friendly to UTF-8.
     QSettings file(configFile, QSettings::IniFormat);
     file.clear(); // remove all existing entries

@@ -122,7 +122,7 @@ public:
     Settings();
     virtual ~Settings();
 
-    bool load(QString profile = QStringLiteral("default"));
+    bool load();
     bool save(QString profile = QString());
 
     bool loadFile(QString filePath);
@@ -131,7 +131,7 @@ public:
     static QString xdgUserConfigDir();
     static const QList<int> & iconSizes(IconType type);
 
-    QString profileDir(QString profile, bool useFallback = false);
+    QString profileDir(QString profile = QString(), bool useFallback = false);
 
     bool supportTrash() const {
         return supportTrash_;

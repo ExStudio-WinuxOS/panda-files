@@ -156,7 +156,7 @@ void FolderItemDelegate::paint(QPainter* painter, const QStyleOptionViewItem& op
 
         if (opt.state & QStyle::State_Selected || opt.state & QStyle::State_MouseOver) {
             painter->save();
-            painter->setPen(Qt::NoPen);
+            painter->setPen(QColor(80, 150, 250, 210));
             if (opt.state & QStyle::State_Selected) {
                 painter->setBrush(QColor(80, 150, 250, 200));
             } else {
