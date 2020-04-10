@@ -23,6 +23,7 @@
 #include "filepropsdialog.h"
 #include "folderview.h"
 #include "utilities.h"
+#include "core/terminal.h"
 #include <cstring> // for memset
 #include <QDebug>
 #include "customaction_p.h"
@@ -46,23 +47,27 @@ FolderMenu::FolderMenu(FolderView* view, QWidget* parent)
 
     createAction_->setMenu(new CreateNewMenu(view_, view_->path(), this));
 
-    separator1_ = addSeparator();
+    // separator1_ = addSeparator();
 
     pasteAction_ = new QAction(tr("Paste"), this);
     addAction(pasteAction_);
     connect(pasteAction_, &QAction::triggered, this, &FolderMenu::onPasteActionTriggered);
 
-    separator2_ = addSeparator();
+    // separator2_ = addSeparator();
 
     selectAllAction_ = new QAction(tr("Select &All"), this);
     addAction(selectAllAction_);
     connect(selectAllAction_, &QAction::triggered, this, &FolderMenu::onSelectAllActionTriggered);
 
+    openTerminalAction_ = new QAction(tr("Open Terminal"), this);
+    addAction(openTerminalAction_);
+    connect(openTerminalAction_, &QAction::triggered, this, &FolderMenu::onOpenTerminalActionTriggered);
+
     // invertSelectionAction_ = new QAction(tr("Invert Selection"), this);
     // addAction(invertSelectionAction_);
     // connect(invertSelectionAction_, &QAction::triggered, this, &FolderMenu::onInvertSelectionActionTriggered);
 
-    separator3_ = addSeparator();
+    // separator3_ = addSeparator();
 
     sortAction_ = new QAction(tr("Sorting"), this);
     addAction(sortAction_);
@@ -243,6 +248,12 @@ void FolderMenu::onPasteActionTriggered()
 
 void FolderMenu::onSelectAllActionTriggered() {
     view_->selectAll();
+}
+
+void FolderMenu::onOpenTerminalActionTriggered()
+{
+    Fm::GErrorPtr err;
+    Fm::launchTerminal(QString("konsole").toUtf8().constData(), view_->path().homeDir(), err);
 }
 
 void FolderMenu::onInvertSelectionActionTriggered() {

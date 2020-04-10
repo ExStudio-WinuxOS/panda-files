@@ -94,6 +94,7 @@ protected Q_SLOTS:
     void onNewFolderActionTriggered();
     void onPasteActionTriggered();
     void onSelectAllActionTriggered();
+    void onOpenTerminalActionTriggered();
     void onInvertSelectionActionTriggered();
     void onSortActionTriggered(bool checked);
     void onSortOrderActionTriggered(bool checked);
@@ -116,6 +117,7 @@ private:
     QAction *pasteAction_;
     QAction *separator2_;
     QAction *selectAllAction_;
+    QAction *openTerminalAction_;
     // QAction* invertSelectionAction_;
     QAction *separator3_;
     QAction *sortAction_;

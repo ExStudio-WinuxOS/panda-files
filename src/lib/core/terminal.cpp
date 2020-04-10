@@ -21,10 +21,10 @@ static void child_setup(gpointer user_data) {
 bool launchTerminal(const char* programName, const FilePath& workingDir, Fm::GErrorPtr& error) {
     /* read system terminals file */
     GKeyFile* kf = g_key_file_new();
-    if(!g_key_file_load_from_file(kf, LIBFM_QT_DATA_DIR "/terminals.list", G_KEY_FILE_NONE, &error)) {
-        g_key_file_free(kf);
-        return false;
-    }
+//    if(!g_key_file_load_from_file(kf, LIBFM_QT_DATA_DIR "/terminals.list", G_KEY_FILE_NONE, &error)) {
+//        g_key_file_free(kf);
+//        return false;
+//    }
     auto launch = g_key_file_get_string(kf, programName, "launch", nullptr);
     auto desktop_id = g_key_file_get_string(kf, programName, "desktop_id", nullptr);
 
