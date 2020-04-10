@@ -29,6 +29,8 @@
 #include "customaction_p.h"
 #include "customactions/fileaction.h"
 #include <QMessageBox>
+#include <QEventLoop>
+
 
 namespace Fm {
 
@@ -235,7 +237,17 @@ void FolderMenu::createSortMenu() {
 
 void FolderMenu::onNewFolderActionTriggered()
 {
-    Fm::createFileOrFolder(CreateNewFolder, view_->path(), nullptr, view_);
+    QString newDirName = Fm::createFolder(view_->path());
+    Fm::FilePath dest = view_->path().child(newDirName.toLocal8Bit().data());
+
+    QEventLoop loop;
+    QTimer::singleShot(100, &loop, &QEventLoop::quit);
+    loop.exec();
+
+    QModelIndex index = view_->model()->indexFromPath(dest);
+    if (index.isValid()) {
+        view_->childView()->edit(index);
+    }
 }
 
 void FolderMenu::onPasteActionTriggered() 

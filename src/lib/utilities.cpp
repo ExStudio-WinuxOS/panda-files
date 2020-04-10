@@ -26,7 +26,10 @@
 #include <QClipboard>
 #include <QMimeData>
 #include <QUrl>
+#include <QDir>
 #include <QList>
+#include <QDebug>
+#include <QFileInfo>
 #include <QStringBuilder>
 #include "QRegularExpression"
 #include <QMessageBox>
@@ -156,7 +159,7 @@ bool changeFileName(const Fm::FilePath& filePath, const QString& newName, QWidge
                                             &err)};
     if(gfile == nullptr) {
         if (showMessage){
-            QMessageBox::critical(parent ? parent->window() : nullptr, QObject::tr("Error"), err.message());
+            // QMessageBox::critical(parent ? parent->window() : nullptr, QObject::tr("Error"), err.message());
         }
         return false;
     }
@@ -269,6 +272,35 @@ _retry:
             folder->reload();
         }
     }
+}
+
+QString createFolder(FilePath parentDir)
+{
+    QString baseName = QObject::tr("New folder");
+    QString fileName;
+    QDir dir(QString::fromUtf8(parentDir.toString().get()));
+    QList<int> indexex;
+
+    // 獲取 index
+    for (const QFileInfo &info : dir.entryInfoList(QDir::Dirs | QDir::NoDotAndDotDot)) {
+        const QString &dirName = info.baseName();
+
+        if (dirName.startsWith(baseName)) {
+            QRegularExpression reg(baseName + " (\\d+)");
+            QRegularExpressionMatch match = reg.match(dirName);
+            indexex << match.captured(1).toInt();
+        }
+    }
+    std::sort(indexex.begin(), indexex.end());
+
+    if (indexex.isEmpty()) {
+        fileName = baseName;
+    } else {
+        fileName = baseName + ' ' + QString::number(indexex.last() + 1);
+    }
+
+    dir.mkdir(fileName);
+    return fileName;
 }
 
 uid_t uidFromName(QString name) {
