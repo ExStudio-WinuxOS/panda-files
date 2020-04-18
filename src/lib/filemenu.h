@@ -72,10 +72,6 @@ public:
         return separator1_;
     }
 
-    QAction* createAction() {
-        return createAction_;
-    }
-
     QAction* separator2() {
         return separator2_;
     }
@@ -195,7 +191,6 @@ private:
     QAction* openWithMenuAction_;
     QAction* openWithAction_;
     QAction* separator1_;
-    QAction* createAction_;
     QAction* separator2_;
     QAction* cutAction_;
     QAction* copyAction_;

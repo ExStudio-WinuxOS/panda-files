@@ -117,11 +117,6 @@ FileMenu::FileMenu(Fm::FileInfoList files, std::shared_ptr<const Fm::FileInfo> i
 
     separator1_ = addSeparator();
 
-    // createAction_ = new QAction(tr("Create &New"), this);
-    // Fm::FilePath dirPath = files_.size() == 1 && info_->isDir() ? path : cwd_;
-    // createAction_->setMenu(new CreateNewMenu(parent, dirPath, this));
-    // addAction(createAction_);
-
     separator2_ = addSeparator();
 
     if(allTrash_) { // all selected files are in trash:///
@@ -187,7 +182,6 @@ FileMenu::FileMenu(Fm::FileInfoList files, std::shared_ptr<const Fm::FileInfo> i
         if(!(sameType_ && info_->isDir()
              && (files_.size() > 1 ? isWritableDir : info_->isWritable()))) {
             pasteAction_->setEnabled(false);
-            // createAction_->setEnabled(false);
         }
     }
 

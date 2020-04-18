@@ -128,7 +128,9 @@ set(SRCS
   applicationadaptor.cpp
   mainwindow.cpp
   tabbar.cpp
+  tabpage.cpp
   view.cpp
+  viewframe.cpp
   desktopwindow.cpp
   desktopentrydialog.cpp
   settings.cpp
