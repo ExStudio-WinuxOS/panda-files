@@ -49,26 +49,46 @@ PlacesModel::PlacesModel(QObject* parent):
     placesRoot->setColumnCount(2);
     appendRow(placesRoot);
 
-    homeItem = new PlacesModelItem("user-home", QString::fromUtf8(g_get_user_name()), Fm::FilePath::homeDir());
+    homeItem = new PlacesModelItem("user-home", tr("Home"), Fm::FilePath::homeDir());
     placesRoot->appendRow(homeItem);
 
     desktopItem = new PlacesModelItem("user-desktop", tr("Desktop"),
-                                      Fm::FilePath::fromLocalPath(QStandardPaths::writableLocation(QStandardPaths::DesktopLocation).toLocal8Bit().constData()));
+                                          Fm::FilePath::fromLocalPath(QStandardPaths::writableLocation(QStandardPaths::DesktopLocation).toLocal8Bit().constData()));
     placesRoot->appendRow(desktopItem);
 
-    createTrashItem();
+    documentsItem = new PlacesModelItem("folder-documents", tr("Documents"),
+                                          Fm::FilePath::fromLocalPath(QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation).toLocal8Bit().constData()));
+    placesRoot->appendRow(documentsItem);
+
+    downloadsItem = new PlacesModelItem("folder-download", tr("Downloads"),
+                                          Fm::FilePath::fromLocalPath(QStandardPaths::writableLocation(QStandardPaths::DownloadLocation).toLocal8Bit().constData()));
+    placesRoot->appendRow(downloadsItem);
+
+    musicItem = new PlacesModelItem("folder-music", tr("Music"),
+                                      Fm::FilePath::fromLocalPath(QStandardPaths::writableLocation(QStandardPaths::MusicLocation).toLocal8Bit().constData()));
+    placesRoot->appendRow(musicItem);
+
+    picturesItem = new PlacesModelItem("folder-pictures", tr("Pictures"),
+                                      Fm::FilePath::fromLocalPath(QStandardPaths::writableLocation(QStandardPaths::PicturesLocation).toLocal8Bit().constData()));
+    placesRoot->appendRow(picturesItem);
+
+    videosItem = new PlacesModelItem("folder-videos", tr("Videos"),
+                                      Fm::FilePath::fromLocalPath(QStandardPaths::writableLocation(QStandardPaths::MoviesLocation).toLocal8Bit().constData()));
+    placesRoot->appendRow(videosItem);
 
     computerItem = new PlacesModelItem("computer", tr("Computer"), Fm::FilePath::fromUri("computer:///"));
     placesRoot->appendRow(computerItem);
 
-    { // Applications
-        const char* applicaion_icon_names[] = {"system-software-install", "applications-accessories", "application-x-executable"};
-        // NOTE: g_themed_icon_new_from_names() accepts char**, but actually const char** is OK.
-        Fm::GIconPtr gicon{g_themed_icon_new_from_names((char**)applicaion_icon_names, G_N_ELEMENTS(applicaion_icon_names)), false};
-        auto fmicon = Fm::IconInfo::fromGIcon(std::move(gicon));
-        applicationsItem = new PlacesModelItem(fmicon, tr("Applications"), Fm::FilePath::fromUri("menu:///applications/"));
-        placesRoot->appendRow(applicationsItem);
-    }
+//    { // Applications
+//        const char* applicaion_icon_names[] = {"system-software-install", "applications-accessories", "application-x-executable"};
+//        // NOTE: g_themed_icon_new_from_names() accepts char**, but actually const char** is OK.
+//        Fm::GIconPtr gicon{g_themed_icon_new_from_names((char**)applicaion_icon_names, G_N_ELEMENTS(applicaion_icon_names)), false};
+//        auto fmicon = Fm::IconInfo::fromGIcon(std::move(gicon));
+//        applicationsItem = new PlacesModelItem(fmicon, tr("Applications"), Fm::FilePath::fromUri("menu:///applications/"));
+//        placesRoot->appendRow(applicationsItem);
+//    }
+
+    createTrashItem();
 
     { // Network
         const char* network_icon_names[] = {"network", "folder-network", "folder"};
@@ -86,7 +106,7 @@ PlacesModel::PlacesModel(QObject* parent):
 
     // volumes
     volumeMonitor = g_volume_monitor_get();
-    if(volumeMonitor) {
+    if (volumeMonitor) {
         g_signal_connect(volumeMonitor, "volume-added", G_CALLBACK(onVolumeAdded), this);
         g_signal_connect(volumeMonitor, "volume-removed", G_CALLBACK(onVolumeRemoved), this);
         g_signal_connect(volumeMonitor, "volume-changed", G_CALLBACK(onVolumeChanged), this);
@@ -237,7 +257,7 @@ void PlacesModel::createTrashItem() {
     }
     g_object_unref(gf);
 
-    placesRoot->insertRow(desktopItem->row() + 1, trashItem_);
+    placesRoot->insertRow(computerItem->row() + 1, trashItem_);
     QTimer::singleShot(0, this, SLOT(updateTrash()));
 }
 

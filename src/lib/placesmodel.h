@@ -131,11 +131,18 @@ private:
     PlacesModelItem* trashItem_;
     GFileMonitor* trashMonitor_;
     QTimer* trashUpdateTimer_;
-    PlacesModelItem* desktopItem;
-    PlacesModelItem* homeItem;
-    PlacesModelItem* computerItem;
-    PlacesModelItem* networkItem;
-    PlacesModelItem* applicationsItem;
+
+    PlacesModelItem *homeItem;
+    PlacesModelItem *desktopItem;
+    PlacesModelItem *documentsItem;
+    PlacesModelItem *downloadsItem;
+    PlacesModelItem *musicItem;
+    PlacesModelItem *picturesItem;
+    PlacesModelItem *videosItem;
+    PlacesModelItem *computerItem;
+    PlacesModelItem *networkItem;
+    PlacesModelItem *applicationsItem;
+
     QIcon ejectIcon_;
     QList<GMount*> shadowedMounts_;
 
