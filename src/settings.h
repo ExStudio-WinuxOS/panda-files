@@ -395,55 +395,16 @@ public:
         showTabClose_ = showTabClose;
     }
 
-    bool rememberWindowSize() const {
-        return rememberWindowSize_;
-    }
-
-    void setRememberWindowSize(bool rememberWindowSize) {
-        rememberWindowSize_ = rememberWindowSize;
-    }
-
     int windowWidth() const {
-        if(rememberWindowSize_) {
-            return lastWindowWidth_;
-        }
-        else {
-            return fixedWindowWidth_;
-        }
+        return lastWindowWidth_;
     }
 
     int windowHeight() const {
-        if(rememberWindowSize_) {
-            return lastWindowHeight_;
-        }
-        else {
-            return fixedWindowHeight_;
-        }
+        return lastWindowHeight_;
     }
 
     bool windowMaximized() const {
-        if(rememberWindowSize_) {
-            return lastWindowMaximized_;
-        }
-        else {
-            return false;
-        }
-    }
-
-    int fixedWindowWidth() const {
-        return fixedWindowWidth_;
-    }
-
-    void setFixedWindowWidth(int fixedWindowWidth) {
-        fixedWindowWidth_ = fixedWindowWidth;
-    }
-
-    int fixedWindowHeight() const {
-        return fixedWindowHeight_;
-    }
-
-    void setFixedWindowHeight(int fixedWindowHeight) {
-        fixedWindowHeight_ = fixedWindowHeight;
+        return lastWindowMaximized_;
     }
 
     void setLastWindowWidth(int lastWindowWidth) {
@@ -472,14 +433,6 @@ public:
 
     void showSidePane(bool show) {
         sidePaneVisible_ = show;
-    }
-
-    Fm::SidePane::Mode sidePaneMode() const {
-        return sidePaneMode_;
-    }
-
-    void setSidePaneMode(Fm::SidePane::Mode sidePaneMode) {
-        sidePaneMode_ = sidePaneMode;
     }
 
     bool showMenuBar() const {
@@ -986,9 +939,6 @@ private:
 
     bool alwaysShowTabs_;
     bool showTabClose_;
-    bool rememberWindowSize_;
-    int fixedWindowWidth_;
-    int fixedWindowHeight_;
     int lastWindowWidth_;
     int lastWindowHeight_;
     bool lastWindowMaximized_;

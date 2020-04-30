@@ -33,17 +33,17 @@ bool Launcher::openFolder(GAppLaunchContext* /*ctx*/, const Fm::FileInfoList& fo
     }
     else {
         if (openInNewTab_) {
-            mainWindow->addTab(std::move(path));
+//            mainWindow->addTab(std::move(path));
         }
         else {
-            mainWindow->chdir(std::move(path));
+//            mainWindow->chdir(std::move(path));
         }
     }
 
     for (size_t i = 1; i < folderInfos.size(); ++i) {
         fi = folderInfos[i];
         path = fi->path();
-        mainWindow->addTab(std::move(path));
+//        mainWindow->addTab(std::move(path));
     }
     mainWindow->show();
     mainWindow->raise();

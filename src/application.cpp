@@ -350,7 +350,7 @@ void Application::updateFromSettings()
         QWidget* window = *it;
         if (window->inherits("PandaFiles")) {
             MainWindow* mainWindow = static_cast<MainWindow*>(window);
-            mainWindow->updateFromSettings(m_settings);
+            // mainWindow->updateFromSettings(m_settings);
         }
     }
 

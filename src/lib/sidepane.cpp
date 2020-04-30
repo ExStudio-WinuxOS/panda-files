@@ -40,11 +40,11 @@ SidePane::SidePane(QWidget* parent):
     verticalLayout = new QVBoxLayout(this);
     verticalLayout->setContentsMargins(0, 0, 0, 0);
 
-    combo_ = new QComboBox(this);
-    combo_->addItem(tr("Lists")); // "Places" is already used in PlacesModel
-    combo_->addItem(tr("Directory Tree"));
-    connect(combo_, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this, &SidePane::onComboCurrentIndexChanged);
-    verticalLayout->addWidget(combo_);
+    // combo_ = new QComboBox(this);
+    // combo_->addItem(tr("Lists")); // "Places" is already used in PlacesModel
+    // combo_->addItem(tr("Directory Tree"));
+    // connect(combo_, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this, &SidePane::onComboCurrentIndexChanged);
+    // verticalLayout->addWidget(combo_);
 }
 
 SidePane::~SidePane() {
@@ -160,7 +160,7 @@ void SidePane::setMode(Mode mode) {
     }
     mode_ = mode;
 
-    combo_->setCurrentIndex(mode);
+    // combo_->setCurrentIndex(mode);
     switch(mode) {
     case ModePlaces: {
         PlacesView* placesView = new Fm::PlacesView(this);

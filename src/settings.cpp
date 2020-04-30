@@ -62,15 +62,10 @@ Settings::Settings():
     desktopSortHiddenLast_(false),
     alwaysShowTabs_(true),
     showTabClose_(true),
-    rememberWindowSize_(true),
-    fixedWindowWidth_(640),
-    fixedWindowHeight_(480),
     lastWindowWidth_(640),
     lastWindowHeight_(480),
     lastWindowMaximized_(false),
-    splitterPos_(120),
     sidePaneVisible_(true),
-    sidePaneMode_(Fm::SidePane::ModePlaces),
     showMenuBar_(true),
     splitView_(false),
     viewMode_(Fm::FolderView::IconMode),
@@ -293,17 +288,13 @@ bool Settings::loadFile(QString filePath)
     settings.endGroup();
 
     settings.beginGroup(QStringLiteral("Window"));
-    fixedWindowWidth_ = settings.value(QStringLiteral("FixedWidth"), 640).toInt();
-    fixedWindowHeight_ = settings.value(QStringLiteral("FixedHeight"), 480).toInt();
-    lastWindowWidth_ = settings.value(QStringLiteral("LastWindowWidth"), 640).toInt();
-    lastWindowHeight_ = settings.value(QStringLiteral("LastWindowHeight"), 480).toInt();
+    lastWindowWidth_ = settings.value(QStringLiteral("LastWindowWidth"), 1000).toInt();
+    lastWindowHeight_ = settings.value(QStringLiteral("LastWindowHeight"), 600).toInt();
     lastWindowMaximized_ = settings.value(QStringLiteral("LastWindowMaximized"), false).toBool();
-    rememberWindowSize_ = settings.value(QStringLiteral("RememberWindowSize"), true).toBool();
     alwaysShowTabs_ = settings.value(QStringLiteral("AlwaysShowTabs"), true).toBool();
     showTabClose_ = settings.value(QStringLiteral("ShowTabClose"), true).toBool();
-    splitterPos_ = settings.value(QStringLiteral("SplitterPos"), 150).toInt();
+    splitterPos_ = settings.value(QStringLiteral("SplitterPos"), 200).toInt();
     sidePaneVisible_ = settings.value(QStringLiteral("SidePaneVisible"), true).toBool();
-    sidePaneMode_ = sidePaneModeFromString(settings.value(QStringLiteral("SidePaneMode")).toString());
     showMenuBar_ = settings.value(QStringLiteral("ShowMenuBar"), true).toBool();
     splitView_ = settings.value(QStringLiteral("SplitView"), false).toBool();
     pathBarButtons_ = settings.value(QStringLiteral("PathBarButtons"), true).toBool();
@@ -437,17 +428,13 @@ bool Settings::saveFile(QString filePath)
     settings.endGroup();
 
     settings.beginGroup(QStringLiteral("Window"));
-    settings.setValue(QStringLiteral("FixedWidth"), fixedWindowWidth_);
-    settings.setValue(QStringLiteral("FixedHeight"), fixedWindowHeight_);
     settings.setValue(QStringLiteral("LastWindowWidth"), lastWindowWidth_);
     settings.setValue(QStringLiteral("LastWindowHeight"), lastWindowHeight_);
     settings.setValue(QStringLiteral("LastWindowMaximized"), lastWindowMaximized_);
-    settings.setValue(QStringLiteral("RememberWindowSize"), rememberWindowSize_);
     settings.setValue(QStringLiteral("AlwaysShowTabs"), alwaysShowTabs_);
     settings.setValue(QStringLiteral("ShowTabClose"), showTabClose_);
     settings.setValue(QStringLiteral("SplitterPos"), splitterPos_);
     settings.setValue(QStringLiteral("SidePaneVisible"), sidePaneVisible_);
-    settings.setValue(QStringLiteral("SidePaneMode"), QString::fromUtf8(sidePaneModeToString(sidePaneMode_)));
     settings.setValue(QStringLiteral("ShowMenuBar"), showMenuBar_);
     settings.setValue(QStringLiteral("SplitView"), splitView_);
     settings.setValue(QStringLiteral("PathBarButtons"), pathBarButtons_);
@@ -693,20 +680,6 @@ static const char* sidePaneModeToString(Fm::SidePane::Mode value) {
     case Fm::SidePane::ModeNone:
         ret = "none";
         break;
-    }
-    return ret;
-}
-
-static Fm::SidePane::Mode sidePaneModeFromString(const QString& str) {
-    Fm::SidePane::Mode ret;
-    if(str == QLatin1String("none")) {
-        ret = Fm::SidePane::ModeNone;
-    }
-    else if(str == QLatin1String("dirtree")) {
-        ret = Fm::SidePane::ModeDirTree;
-    }
-    else {
-        ret = Fm::SidePane::ModePlaces;
     }
     return ret;
 }

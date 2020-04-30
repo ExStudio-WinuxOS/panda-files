@@ -31,8 +31,8 @@ ViewFrame::ViewFrame(QWidget* parent):
 
 void ViewFrame::createTopBar(bool usePathButtons)
 {
-    if(QVBoxLayout* vBox = qobject_cast<QVBoxLayout*>(layout())) {
-        if(usePathButtons) {
+    if (QVBoxLayout* vBox = qobject_cast<QVBoxLayout*>(layout())) {
+        if (usePathButtons) {
             if (qobject_cast<Fm::PathEdit*>(topBar_)) {
                 delete topBar_;
                 topBar_ = nullptr;
@@ -43,11 +43,11 @@ void ViewFrame::createTopBar(bool usePathButtons)
             }
         }
         else {
-            if(qobject_cast<Fm::PathBar*>(topBar_)) {
+            if (qobject_cast<Fm::PathBar*>(topBar_)) {
                 delete topBar_;
                 topBar_ = nullptr;
             }
-            if(topBar_ == nullptr) {
+            if (topBar_ == nullptr) {
                 topBar_ = new Fm::PathEdit();
                 vBox->insertWidget(0, topBar_);
             }
@@ -58,7 +58,7 @@ void ViewFrame::createTopBar(bool usePathButtons)
 void ViewFrame::removeTopBar()
 {
     if (topBar_ != nullptr) {
-        if(QVBoxLayout* vBox = qobject_cast<QVBoxLayout*>(layout())) {
+        if (QVBoxLayout* vBox = qobject_cast<QVBoxLayout*>(layout())) {
             vBox->removeWidget(topBar_);
             delete topBar_;
             topBar_ = nullptr;
