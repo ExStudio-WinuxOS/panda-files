@@ -54,6 +54,24 @@ protected:
     void resizeEvent(QResizeEvent *e) override;
 
 private:
+    void initViewFrame();
+    void addTabWithPage(Fm::FilePath path);
+
+    TabPage *currentPage();
+    void chdir(Fm::FilePath path);
+    void updateCurrentPage();
+    void updateTabBar();
+
+    void onSplitterMoved(int pos, int index);
+    void onPathBarChdir(const Fm::FilePath &dirPath);
+    void onTabBarCurrentChanged(int index);
+    void onTabBarCloseRequested(int index);
+    void onTabBarTabMoved(int from, int to);
+    void onTabBarClicked(int index);
+    void onStackedWidgetWidgetRemoved(int index);
+    void onSidePaneChdirRequested(int type, const Fm::FilePath &path);
+
+private:
     static MainWindow *m_lastActive;
 
     QHBoxLayout *pathBarLayout_;
@@ -62,11 +80,9 @@ private:
     Fm::PathBar *pathBar_;
     Fm::SidePane *sidePane_;
     QSplitter *splitter_;
-    QFrame *rightView_;
-    QVBoxLayout *rightLayout_;
+    ViewFrame *viewFrame_;
 
     std::shared_ptr<Fm::Bookmarks> m_bookmarks;
-    ViewFrame *activeViewFrame_;
 
     Launcher fileLauncher_;
 

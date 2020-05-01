@@ -60,10 +60,8 @@ MainWindow::MainWindow(Fm::FilePath path)
       pathBar_(new Fm::PathBar(this)),
       sidePane_(new Fm::SidePane),
       splitter_(new QSplitter(Qt::Horizontal)),
-      rightView_(new QFrame),
-      rightLayout_(new QVBoxLayout),
-      m_bookmarks(Fm::Bookmarks::globalInstance()),
-      activeViewFrame_(nullptr)
+      viewFrame_(new ViewFrame),
+      m_bookmarks(Fm::Bookmarks::globalInstance())
 {
     QVBoxLayout *layout = new QVBoxLayout;
     QWidget *widget = new QWidget;
@@ -110,11 +108,9 @@ MainWindow::MainWindow(Fm::FilePath path)
     sidePane_->setMode(Fm::SidePane::ModePlaces);
     sidePane_->restoreHiddenPlaces(settings.getHiddenPlaces());
 
-    rightView_->setLayout(rightLayout_);
-
     splitter_->setOrientation(Qt::Horizontal);
     splitter_->addWidget(sidePane_);
-    splitter_->addWidget(rightView_);
+    splitter_->addWidget(viewFrame_);
     splitter_->setChildrenCollapsible(false);
 
     // setup the splitter
@@ -129,6 +125,15 @@ MainWindow::MainWindow(Fm::FilePath path)
     if (settings.windowMaximized()) {
         setWindowState(windowState() | Qt::WindowMaximized);
     }
+    setWindowTitle(tr("File Manager"));
+
+    initViewFrame();
+    addTabWithPage(path);
+
+    // detect change of splitter position
+    connect(splitter_, &QSplitter::splitterMoved, this, &MainWindow::onSplitterMoved);
+    connect(pathBar_, &Fm::PathBar::chdir, this, &MainWindow::onPathBarChdir);
+    connect(sidePane_, &Fm::SidePane::chdirRequested, this, &MainWindow::onSidePaneChdirRequested);
 }
 
 MainWindow::~MainWindow()
@@ -156,5 +161,162 @@ void MainWindow::resizeEvent(QResizeEvent *e)
     if (!isMaximized()) {
         settings.setLastWindowWidth(width());
         settings.setLastWindowHeight(height());
+    }
+}
+
+void MainWindow::initViewFrame()
+{
+    viewFrame_->tabBar()->setTabsClosable(true);
+
+    connect(viewFrame_->tabBar(), &QTabBar::currentChanged, this, &MainWindow::onTabBarCurrentChanged);
+    connect(viewFrame_->tabBar(), &QTabBar::tabCloseRequested, this, &MainWindow::onTabBarCloseRequested);
+    connect(viewFrame_->tabBar(), &QTabBar::tabMoved, this, &MainWindow::onTabBarTabMoved);
+    connect(viewFrame_->tabBar(), &QTabBar::tabBarClicked, this, &MainWindow::onTabBarClicked);
+    connect(viewFrame_->stackedWidget(), &QStackedWidget::widgetRemoved, this, &MainWindow::onStackedWidgetWidgetRemoved);
+}
+
+void MainWindow::addTabWithPage(Fm::FilePath path)
+{
+    TabPage *page = new TabPage(this);
+    page->setFileLauncher(&fileLauncher_);
+    int index = viewFrame_->stackedWidget()->addWidget(page);
+
+    // onTabPageTitleChanged
+    connect(page, &TabPage::titleChanged, this, [=] (const QString title) {
+        TabPage* tabPage = static_cast<TabPage*>(sender());
+        int index = viewFrame_->stackedWidget()->indexOf(tabPage);
+        if (index >= 0) {
+            viewFrame_->tabBar()->setTabText(index, title);
+        }
+    });
+
+    if (path) {
+        page->chdir(path, true);
+    }
+    viewFrame_->tabBar()->insertTab(index, page->windowTitle());
+    updateTabBar();
+}
+
+TabPage *MainWindow::currentPage()
+{
+    return reinterpret_cast<TabPage *>(viewFrame_->stackedWidget()->currentWidget());
+}
+
+void MainWindow::chdir(Fm::FilePath path)
+{
+    // wait until queued events are processed
+    QTimer::singleShot(0, viewFrame_, [this, path] {
+        TabPage *page = currentPage();
+        if (page) {
+            page->chdir(path);
+
+            pathBar_->setPath(page->path());
+        }
+    });
+}
+
+void MainWindow::updateCurrentPage()
+{
+    TabPage *page = currentPage();
+    if (page) {
+        // setWindowTitle(page->windowTitle());
+        pathBar_->setPath(page->path());
+    }
+}
+
+void MainWindow::updateTabBar()
+{
+    if (viewFrame_->tabBar()->count() == 1) {
+        viewFrame_->tabBar()->setVisible(false);
+    } else {
+        viewFrame_->tabBar()->setVisible(true);
+    }
+}
+
+void MainWindow::onSplitterMoved(int pos, int index)
+{
+    Q_UNUSED(index);
+
+    static_cast<Application *>(qApp)->settings().setSplitterPos(pos);
+}
+
+void MainWindow::onPathBarChdir(const Fm::FilePath &dirPath)
+{
+    TabPage *page = currentPage();
+
+    if (page && dirPath != page->path()) {
+        chdir(dirPath);
+    }
+}
+
+void MainWindow::onTabBarCurrentChanged(int index)
+{
+    TabBar *tabBar = static_cast<TabBar *>(sender());
+    viewFrame_->stackedWidget()->setCurrentIndex(index);
+    updateCurrentPage();
+}
+
+void MainWindow::onTabBarCloseRequested(int index)
+{
+    TabBar *tabBar = static_cast<TabBar *>(sender());
+    QWidget *page = viewFrame_->stackedWidget()->widget(index);
+
+    if (page) {
+        // this does not delete the page widget
+        viewFrame_->stackedWidget()->removeWidget(page);
+
+        delete page;
+        // NOTE: we do not remove the tab here.
+        // it'll be done in onStackedWidgetWidgetRemoved()
+    }
+}
+
+void MainWindow::onTabBarTabMoved(int from, int to)
+{
+    TabBar *tabBar = static_cast<TabBar *>(sender());
+    // a tab in the tab bar is moved by the user, so we have to move the
+    //  corredponding tab page in the stacked widget to the new position, too.
+    QWidget *page = viewFrame_->stackedWidget()->widget(from);
+    if (page) {
+        // we're not going to delete the tab page, so here we block signals
+        // to avoid calling the slot onStackedWidgetWidgetRemoved() before
+        // removing the page. Otherwise the page widget will be destroyed.
+        viewFrame_->stackedWidget()->blockSignals(true);
+        viewFrame_->stackedWidget()->removeWidget(page);
+        // insert the page to the new position.
+        viewFrame_->stackedWidget()->insertWidget(to, page);
+        // unblock signals.
+        viewFrame_->stackedWidget()->blockSignals(false);
+        viewFrame_->stackedWidget()->setCurrentWidget(page);
+    }
+}
+
+void MainWindow::onTabBarClicked(int index)
+{
+    Q_UNUSED(index);
+
+    TabBar *tabBar = static_cast<TabBar *>(sender());
+    TabPage *page = currentPage();
+    if (page) {
+        page->folderView()->childView()->setFocus();
+    }
+}
+
+void MainWindow::onStackedWidgetWidgetRemoved(int index)
+{
+    QStackedWidget *sw = static_cast<QStackedWidget *>(sender());
+    viewFrame_->tabBar()->removeTab(index);
+    updateTabBar();
+}
+
+void MainWindow::onSidePaneChdirRequested(int type, const Fm::FilePath &path)
+{
+    // FIXME: use enum for type value or change it to button.
+    if (type == 0) { // left button (default)
+        chdir(path);
+    } else if(type == 1) { // middle button
+        addTabWithPage(path);
+    } else if(type == 2) { // new window
+        (new MainWindow(path))->show();
     }
 }

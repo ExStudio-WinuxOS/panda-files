@@ -115,7 +115,7 @@ void View::prepareFileMenu(Fm::FileMenu* menu)
         }
     }
 
-    if(all_directory) {
+    if (all_directory) {
         QAction* action = new QAction(QIcon::fromTheme(QStringLiteral("window-new")), tr("Open in New T&ab"), menu);
         connect(action, &QAction::triggered, this, &View::onNewTab);
         menu->insertAction(menu->separator1(), action);
@@ -127,14 +127,14 @@ void View::prepareFileMenu(Fm::FileMenu* menu)
         // TODO: add search
         // action = menu->addAction(_("Search"));
 
-        if(all_native) {
+        if (all_native) {
             action = new QAction(QIcon::fromTheme(QStringLiteral("utilities-terminal")), tr("Open in Termina&l"), menu);
             connect(action, &QAction::triggered, this, &View::onOpenInTerminal);
             menu->insertAction(menu->separator1(), action);
         }
     }
     else {
-        if(menu->pasteAction()) { // nullptr for trash
+        if (menu->pasteAction()) { // nullptr for trash
             menu->pasteAction()->setVisible(false);
         }
     }
@@ -158,7 +158,7 @@ void View::updateFromSettings(Settings& settings)
     setCtrlRightClick(settings.ctrlRightClick());
 
     Fm::ProxyFolderModel* proxyModel = model();
-    if(proxyModel) {
+    if (proxyModel) {
         proxyModel->setShowThumbnails(settings.showThumbnails());
         proxyModel->setBackupAsHidden(settings.backupAsHidden());
     }

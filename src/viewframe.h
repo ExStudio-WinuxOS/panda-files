@@ -17,13 +17,13 @@ public:
     void createTopBar(bool usePathButtons);
     void removeTopBar();
 
-    QWidget* getTopBar() const {
+    QWidget *topBar() const {
         return topBar_;
     }
-    TabBar* getTabBar() const {
+    TabBar *tabBar() const {
         return tabBar_;
     }
-    QStackedWidget* getStackedWidget() const {
+    QStackedWidget *stackedWidget() const {
         return stackedWidget_;
     }
 

@@ -4,9 +4,9 @@
 #include "lib/pathedit.h"
 #include "lib/pathbar.h"
 
-ViewFrame::ViewFrame(QWidget* parent):
-    QFrame(parent),
-    topBar_(nullptr)
+ViewFrame::ViewFrame(QWidget* parent)
+    : QFrame(parent),
+      topBar_(nullptr)
 {
     QVBoxLayout* vBox = new QVBoxLayout;
     vBox->setContentsMargins(0, 0, 0, 0);
