@@ -103,7 +103,6 @@ set(libfm_UIS
     rename-dialog.ui
     mount-operation-password.ui
     edit-bookmarks.ui
-    exec-file.ui
     app-chooser-dialog.ui
     filesearch.ui
     filedialog.ui

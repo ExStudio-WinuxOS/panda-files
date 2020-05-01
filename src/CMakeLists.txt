@@ -103,7 +103,6 @@ set(LIB_UIS
     lib/rename-dialog.ui
     lib/mount-operation-password.ui
     lib/edit-bookmarks.ui
-    lib/exec-file.ui
     lib/app-chooser-dialog.ui
     lib/filesearch.ui
     lib/filedialog.ui

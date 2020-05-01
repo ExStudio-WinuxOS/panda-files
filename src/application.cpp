@@ -185,7 +185,6 @@ void Application::desktopManager(bool enabled)
                     m_desktopWindows.push_back(window);
                 }
             }
-
         }
     } else {
         if (m_enableDesktopManager) {

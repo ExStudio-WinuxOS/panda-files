@@ -1,20 +1,20 @@
 /*
- * Copyright (C) 2014 - 2015  Hong Jen Yee (PCMan) <pcman.tw@gmail.com>
+ * Copyright (C) 2020 PandaOS Team.
  *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
+ * Author:     rekols <rekols@foxmail.com>
  *
- * This library is distributed in the hope that it will be useful,
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
- *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #ifndef FM_EXECFILEDIALOG_H
@@ -24,6 +24,7 @@
 #include "core/fileinfo.h"
 
 #include <QDialog>
+#include <QPushButton>
 
 #include <memory>
 
@@ -33,23 +34,29 @@ namespace Ui {
 
 namespace Fm {
 
-class ExecFileDialog : public QDialog {
-  Q_OBJECT
-public:
-  ~ExecFileDialog() override;
-  ExecFileDialog(const FileInfo& fileInfo, QWidget* parent = nullptr, Qt::WindowFlags f = 0);
+class ExecFileDialog : public QDialog
+{
+    Q_OBJECT
 
-  BasicFileLauncher::ExecAction result() {
-    return result_;
-  }
+public:
+    ExecFileDialog(const FileInfo& fileInfo, QWidget* parent = nullptr, Qt::WindowFlags f = 0);
+    ~ExecFileDialog() override;
+
+    BasicFileLauncher::ExecAction result() {
+        return result_;
+    }
 
 protected:
-  void accept() override;
-  void reject() override;
+    void accept() override;
+    void reject() override;
 
 private:
-  Ui::ExecFileDialog* ui;
-  BasicFileLauncher::ExecAction result_;
+    BasicFileLauncher::ExecAction result_;
+
+    QPushButton *openButton_;
+    QPushButton *execButton_;
+    QPushButton *execTermButton_;
+    QPushButton *canelButton_;
 };
 
 }
