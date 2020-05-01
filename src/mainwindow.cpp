@@ -61,7 +61,8 @@ MainWindow::MainWindow(Fm::FilePath path)
       sidePane_(new Fm::SidePane),
       splitter_(new QSplitter(Qt::Horizontal)),
       viewFrame_(new ViewFrame),
-      m_bookmarks(Fm::Bookmarks::globalInstance())
+      m_bookmarks(Fm::Bookmarks::globalInstance()),
+      fileLauncher_(this)
 {
     QVBoxLayout *layout = new QVBoxLayout;
     QWidget *widget = new QWidget;
@@ -140,6 +141,41 @@ MainWindow::~MainWindow()
 {
 }
 
+void MainWindow::chdir(Fm::FilePath path)
+{
+    // wait until queued events are processed
+    QTimer::singleShot(0, viewFrame_, [this, path] {
+        TabPage *page = currentPage();
+        if (page) {
+            page->chdir(path);
+
+            pathBar_->setPath(page->path());
+        }
+    });
+}
+
+void MainWindow::addTabWithPage(Fm::FilePath path)
+{
+    TabPage *page = new TabPage(this);
+    page->setFileLauncher(&fileLauncher_);
+    int index = viewFrame_->stackedWidget()->addWidget(page);
+
+    // onTabPageTitleChanged
+    connect(page, &TabPage::titleChanged, this, [=] (const QString title) {
+        TabPage* tabPage = static_cast<TabPage*>(sender());
+        int index = viewFrame_->stackedWidget()->indexOf(tabPage);
+        if (index >= 0) {
+            viewFrame_->tabBar()->setTabText(index, title);
+        }
+    });
+
+    if (path) {
+        page->chdir(path, true);
+    }
+    viewFrame_->tabBar()->insertTab(index, page->windowTitle());
+    updateTabBar();
+}
+
 void MainWindow::closeEvent(QCloseEvent *e)
 {
     if (m_lastActive == this) {
@@ -175,44 +211,9 @@ void MainWindow::initViewFrame()
     connect(viewFrame_->stackedWidget(), &QStackedWidget::widgetRemoved, this, &MainWindow::onStackedWidgetWidgetRemoved);
 }
 
-void MainWindow::addTabWithPage(Fm::FilePath path)
-{
-    TabPage *page = new TabPage(this);
-    page->setFileLauncher(&fileLauncher_);
-    int index = viewFrame_->stackedWidget()->addWidget(page);
-
-    // onTabPageTitleChanged
-    connect(page, &TabPage::titleChanged, this, [=] (const QString title) {
-        TabPage* tabPage = static_cast<TabPage*>(sender());
-        int index = viewFrame_->stackedWidget()->indexOf(tabPage);
-        if (index >= 0) {
-            viewFrame_->tabBar()->setTabText(index, title);
-        }
-    });
-
-    if (path) {
-        page->chdir(path, true);
-    }
-    viewFrame_->tabBar()->insertTab(index, page->windowTitle());
-    updateTabBar();
-}
-
 TabPage *MainWindow::currentPage()
 {
     return reinterpret_cast<TabPage *>(viewFrame_->stackedWidget()->currentWidget());
-}
-
-void MainWindow::chdir(Fm::FilePath path)
-{
-    // wait until queued events are processed
-    QTimer::singleShot(0, viewFrame_, [this, path] {
-        TabPage *page = currentPage();
-        if (page) {
-            page->chdir(path);
-
-            pathBar_->setPath(page->path());
-        }
-    });
 }
 
 void MainWindow::updateCurrentPage()

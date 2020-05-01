@@ -30,21 +30,20 @@ bool Launcher::openFolder(GAppLaunchContext* /*ctx*/, const Fm::FileInfoList& fo
         if (app->settings().windowMaximized()) {
             mainWindow->setWindowState(mainWindow->windowState() | Qt::WindowMaximized);
         }
-    }
-    else {
+    } else {
         if (openInNewTab_) {
-//            mainWindow->addTab(std::move(path));
-        }
-        else {
-//            mainWindow->chdir(std::move(path));
+            mainWindow_->addTabWithPage(std::move(path));
+        } else {
+            mainWindow_->chdir(std::move(path));
         }
     }
 
     for (size_t i = 1; i < folderInfos.size(); ++i) {
         fi = folderInfos[i];
         path = fi->path();
-//        mainWindow->addTab(std::move(path));
+        mainWindow_->addTabWithPage(std::move(path));
     }
+
     mainWindow->show();
     mainWindow->raise();
     mainWindow->activateWindow();

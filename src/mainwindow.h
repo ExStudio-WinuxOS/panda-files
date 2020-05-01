@@ -49,16 +49,18 @@ public:
     MainWindow(Fm::FilePath path = Fm::FilePath());
     ~MainWindow();
 
+    void chdir(Fm::FilePath path);
+    void addTabWithPage(Fm::FilePath path);
+
 protected:
     void closeEvent(QCloseEvent *e) override;
     void resizeEvent(QResizeEvent *e) override;
 
 private:
     void initViewFrame();
-    void addTabWithPage(Fm::FilePath path);
 
     TabPage *currentPage();
-    void chdir(Fm::FilePath path);
+
     void updateCurrentPage();
     void updateTabBar();
 
