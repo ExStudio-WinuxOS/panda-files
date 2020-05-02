@@ -80,17 +80,18 @@ MainWindow::MainWindow(Fm::FilePath path)
     topBarWidget->setFixedHeight(45);
     pathBarLayout_->setMargin(0);
     pathBarLayout_->setSpacing(0);
+
     pathBarLayout_->addSpacing(10);
     pathBarLayout_->addWidget(goBackButton_);
     pathBarLayout_->addSpacing(5);
     pathBarLayout_->addWidget(goForwardButton_);
-    pathBarLayout_->addSpacing(10);
+    pathBarLayout_->addSpacing(5);
     pathBarLayout_->addWidget(pathBar_);
-    pathBarLayout_->addSpacing(10);
+    pathBarLayout_->addSpacing(5);
     pathBarLayout_->addWidget(iconViewButton_);
     pathBarLayout_->addSpacing(5);
     pathBarLayout_->addWidget(listViewButton_);
-    pathBarLayout_->addSpacing(5);
+    pathBarLayout_->addSpacing(10);
 
     goBackButton_->setIcon(QIcon::fromTheme("go-previous"));
     goForwardButton_->setIcon(QIcon::fromTheme("go-next"));
@@ -152,6 +153,12 @@ MainWindow::MainWindow(Fm::FilePath path)
     // detect change of splitter position
     connect(splitter_, &QSplitter::splitterMoved, this, &MainWindow::onSplitterMoved);
     connect(pathBar_, &Fm::PathBar::chdir, this, &MainWindow::onPathBarChdir);
+    connect(pathBar_, &Fm::PathBar::editingFinished, this, [=] {
+        if (TabPage* page = currentPage()) {
+            page->folderView()->childView()->setFocus();
+        }
+    });
+
     connect(sidePane_, &Fm::SidePane::chdirRequested, this, &MainWindow::onSidePaneChdirRequested);
 
     // buttons

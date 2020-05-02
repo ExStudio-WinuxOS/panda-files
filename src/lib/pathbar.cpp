@@ -32,7 +32,6 @@
 #include <QDebug>
 #include "pathedit.h"
 
-
 namespace Fm {
 
 PathBar::PathBar(QWidget* parent)
@@ -41,7 +40,7 @@ PathBar::PathBar(QWidget* parent)
     toggledBtn_(nullptr)
 {
     QHBoxLayout* topLayout = new QHBoxLayout(this);
-    topLayout->setContentsMargins(0, 0, 0, 0);
+    // topLayout->setContentsMargins(0, 0, 0, 0);
     topLayout->setSpacing(0);
     bool rtl(layoutDirection() == Qt::RightToLeft);
 
@@ -82,16 +81,18 @@ PathBar::PathBar(QWidget* parent)
     buttonsLayout_->setSizeConstraint(QLayout::SetFixedSize); // required when added to scroll area according to QScrollArea doc.
     scrollArea_->setWidget(buttonsWidget_); // make the buttons widget scrollable if the path is too long
     scrollArea_->setStyleSheet("background: transparent;");
-    scrollArea_->setStyleSheet("QScrollArea { background: #F2F2F2; border-radius: 10px; }");
+    scrollArea_->setStyleSheet("QScrollArea { background: #F2F2F2; border-radius: 6px; }");
 }
 
-void PathBar::resizeEvent(QResizeEvent* event) {
+void PathBar::resizeEvent(QResizeEvent* event)
+{
     QWidget::resizeEvent(event);
     updateScrollButtonVisibility();
     QTimer::singleShot(0, this, SLOT(ensureToggledVisible()));
 }
 
-void PathBar::wheelEvent(QWheelEvent* event) {
+void PathBar::wheelEvent(QWheelEvent* event)
+{
     QWidget::wheelEvent(event);
     QAbstractSlider::SliderAction action = QAbstractSlider::SliderNoAction;
     int vDelta = event->angleDelta().y();
@@ -108,7 +109,8 @@ void PathBar::wheelEvent(QWheelEvent* event) {
     scrollArea_->horizontalScrollBar()->triggerAction(action);
 }
 
-void PathBar::mousePressEvent(QMouseEvent* event) {
+void PathBar::mousePressEvent(QMouseEvent* event)
+{
     QWidget::mousePressEvent(event);
     if(event->button() == Qt::LeftButton) {
         openEditor();
@@ -123,7 +125,8 @@ void PathBar::mousePressEvent(QMouseEvent* event) {
     }
 }
 
-void PathBar::contextMenuEvent(QContextMenuEvent* event) {
+void PathBar::contextMenuEvent(QContextMenuEvent* event)
+{
     QMenu* menu = new QMenu(this);
     connect(menu, &QMenu::aboutToHide, menu, &QMenu::deleteLater);
 
@@ -136,14 +139,16 @@ void PathBar::contextMenuEvent(QContextMenuEvent* event) {
     menu->popup(mapToGlobal(event->pos()));
 }
 
-void PathBar::updateScrollButtonVisibility() {
+void PathBar::updateScrollButtonVisibility()
+{
     // Wait for the horizontal scrollbar to be completely shaped.
     // Without this, the enabled state of arrow buttons might be
     // wrong when the pathbar is created for the first time.
     QTimer::singleShot(0, this, SLOT(setScrollButtonVisibility()));
 }
 
-void PathBar::setScrollButtonVisibility() {
+void PathBar::setScrollButtonVisibility()
+{
     bool showScrollers;
     if(tempPathEdit_ != nullptr) {
         showScrollers = false;
@@ -161,7 +166,8 @@ void PathBar::setScrollButtonVisibility() {
     }
 }
 
-Fm::FilePath PathBar::pathForButton(PathButton* btn) {
+Fm::FilePath PathBar::pathForButton(PathButton* btn)
+{
     std::string fullPath;
     int buttonCount = buttonsLayout_->count() - 1; // the last item is a spacer
     for(int i = 0; i < buttonCount; ++i) {
@@ -176,7 +182,8 @@ Fm::FilePath PathBar::pathForButton(PathButton* btn) {
     return Fm::FilePath::fromPathStr(fullPath.c_str());
 }
 
-void PathBar::onButtonToggled(bool checked) {
+void PathBar::onButtonToggled(bool checked)
+{
     if(checked) {
         PathButton* btn = static_cast<PathButton*>(sender());
         toggledBtn_ = btn;
@@ -195,13 +202,15 @@ void PathBar::onButtonToggled(bool checked) {
     }
 }
 
-void PathBar::ensureToggledVisible() {
+void PathBar::ensureToggledVisible()
+{
     if(toggledBtn_ != nullptr && tempPathEdit_ == nullptr) {
         scrollArea_->ensureWidgetVisible(toggledBtn_, 1);
     }
 }
 
-void PathBar::onScrollButtonClicked() {
+void PathBar::onScrollButtonClicked()
+{
     QToolButton* btn = static_cast<QToolButton*>(sender());
     QAbstractSlider::SliderAction action = QAbstractSlider::SliderNoAction;
     if(btn == scrollToEnd_) {
@@ -213,7 +222,8 @@ void PathBar::onScrollButtonClicked() {
     scrollArea_->horizontalScrollBar()->triggerAction(action);
 }
 
-void PathBar::setPath(Fm::FilePath path) {
+void PathBar::setPath(Fm::FilePath path)
+{
     if(currentPath_ == path) { // same path, do nothing
         return;
     }
@@ -282,7 +292,7 @@ void PathBar::setPath(Fm::FilePath path) {
 
     // we don't want to scroll vertically. make the scroll area fit the height of the buttons
     // FIXME: this is a little bit hackish :-(
-    scrollArea_->setFixedHeight(buttonsLayout_->sizeHint().height());
+    // scrollArea_->setFixedHeight(buttonsLayout_->sizeHint().height());
     updateScrollButtonVisibility();
 
     // to guarantee that the button will be scrolled to correctly,
@@ -297,7 +307,8 @@ void PathBar::setPath(Fm::FilePath path) {
     setUpdatesEnabled(true);
 }
 
-void PathBar::openEditor() {
+void PathBar::openEditor()
+{
     if(tempPathEdit_ == nullptr) {
         tempPathEdit_ = new PathEdit(this);
         delete layout()->replaceWidget(scrollArea_, tempPathEdit_, Qt::FindDirectChildrenOnly);
@@ -314,7 +325,8 @@ void PathBar::openEditor() {
     QTimer::singleShot(0, tempPathEdit_, SLOT(setFocus()));
 }
 
-void PathBar::closeEditor() {
+void PathBar::closeEditor()
+{
     if(tempPathEdit_ == nullptr) {
         return;
     }
@@ -338,16 +350,19 @@ void PathBar::closeEditor() {
     Q_EMIT editingFinished();
 }
 
-void PathBar::copyPath() {
+void PathBar::copyPath()
+{
     QApplication::clipboard()->setText(QString::fromUtf8(currentPath_.toString().get()));
 }
 
-void PathBar::onReturnPressed() {
+void PathBar::onReturnPressed()
+{
     QByteArray pathStr = tempPathEdit_->text().toLocal8Bit();
     setPath(Fm::FilePath::fromPathStr(pathStr.constData()));
 }
 
-void PathBar::setArrowEnabledState(int value) {
+void PathBar::setArrowEnabledState(int value)
+{
     if(buttonsLayout_->sizeHint().width() > width()) {
         QScrollBar* sb = scrollArea_->horizontalScrollBar();
         scrollToStart_->setEnabled(value != sb->minimum());
