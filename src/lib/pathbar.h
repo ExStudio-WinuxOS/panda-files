@@ -33,8 +33,10 @@ namespace Fm {
 class PathEdit;
 class PathButton;
 
-class PathBar: public QWidget {
+class PathBar: public QWidget
+{
     Q_OBJECT
+
 public:
     explicit PathBar(QWidget* parent = nullptr);
 

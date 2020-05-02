@@ -35,11 +35,11 @@
 
 namespace Fm {
 
-PathBar::PathBar(QWidget* parent):
-    QWidget(parent),
+PathBar::PathBar(QWidget* parent)
+  : QWidget(parent),
     tempPathEdit_(nullptr),
-    toggledBtn_(nullptr) {
-
+    toggledBtn_(nullptr)
+{
     QHBoxLayout* topLayout = new QHBoxLayout(this);
     topLayout->setContentsMargins(0, 0, 0, 0);
     topLayout->setSpacing(0);
@@ -82,6 +82,7 @@ PathBar::PathBar(QWidget* parent):
     buttonsLayout_->setSizeConstraint(QLayout::SetFixedSize); // required when added to scroll area according to QScrollArea doc.
     scrollArea_->setWidget(buttonsWidget_); // make the buttons widget scrollable if the path is too long
     scrollArea_->setStyleSheet("background: transparent;");
+    scrollArea_->setStyleSheet("QScrollArea { background: #F2F2F2; border-radius: 10px; }");
 }
 
 void PathBar::resizeEvent(QResizeEvent* event) {

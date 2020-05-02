@@ -75,21 +75,22 @@ MainWindow::MainWindow(Fm::FilePath path)
     widget->setLayout(layout);
     setCentralWidget(widget);
 
-    QWidget *pathBarWidget = new QWidget;
+    QWidget *topBarWidget = new QWidget;
+    topBarWidget->setLayout(pathBarLayout_);
+    topBarWidget->setFixedHeight(45);
     pathBarLayout_->setMargin(0);
     pathBarLayout_->setSpacing(0);
-    pathBarLayout_->addSpacing(5);
+    pathBarLayout_->addSpacing(10);
     pathBarLayout_->addWidget(goBackButton_);
     pathBarLayout_->addSpacing(5);
     pathBarLayout_->addWidget(goForwardButton_);
-    pathBarLayout_->addSpacing(5);
+    pathBarLayout_->addSpacing(10);
     pathBarLayout_->addWidget(pathBar_);
-    pathBarLayout_->addSpacing(5);
+    pathBarLayout_->addSpacing(10);
     pathBarLayout_->addWidget(iconViewButton_);
     pathBarLayout_->addSpacing(5);
     pathBarLayout_->addWidget(listViewButton_);
     pathBarLayout_->addSpacing(5);
-    pathBarWidget->setLayout(pathBarLayout_);
 
     goBackButton_->setIcon(QIcon::fromTheme("go-previous"));
     goForwardButton_->setIcon(QIcon::fromTheme("go-next"));
@@ -97,13 +98,6 @@ MainWindow::MainWindow(Fm::FilePath path)
                                               style()->standardIcon(QStyle::SP_FileDialogContentsView)));
     listViewButton_->setIcon(QIcon::fromTheme(QLatin1String("view-list-details"),
                                               style()->standardIcon(QStyle::SP_FileDialogDetailedView)));
-
-    QWidget *topBarWidget = new QWidget;
-    QHBoxLayout *topBarLayout = new QHBoxLayout(topBarWidget);
-    topBarLayout->addWidget(pathBarWidget);
-    topBarLayout->setMargin(0);
-    topBarLayout->setSpacing(0);
-    topBarWidget->setFixedHeight(45);
 
     QWidget *contentWidget = new QWidget;
     QHBoxLayout *contentLayout = new QHBoxLayout(contentWidget);
