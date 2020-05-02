@@ -159,7 +159,7 @@ bool changeFileName(const Fm::FilePath& filePath, const QString& newName, QWidge
                                             &err)};
     if(gfile == nullptr) {
         if (showMessage){
-            // QMessageBox::critical(parent ? parent->window() : nullptr, QObject::tr("Error"), err.message());
+            QMessageBox::critical(parent ? parent->window() : nullptr, QObject::tr("Error"), err.message());
         }
         return false;
     }

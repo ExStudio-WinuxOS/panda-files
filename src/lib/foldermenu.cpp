@@ -237,17 +237,19 @@ void FolderMenu::createSortMenu() {
 
 void FolderMenu::onNewFolderActionTriggered()
 {
-    QString newDirName = Fm::createFolder(view_->path());
-    Fm::FilePath dest = view_->path().child(newDirName.toLocal8Bit().data());
+    Fm::createFileOrFolder(CreateNewFolder, view_->path(), nullptr, view_);
 
-    QEventLoop loop;
-    QTimer::singleShot(100, &loop, &QEventLoop::quit);
-    loop.exec();
+//    QString newDirName = Fm::createFolder(view_->path());
+//    Fm::FilePath dest = view_->path().child(newDirName.toLocal8Bit().data());
 
-    QModelIndex index = view_->model()->indexFromPath(dest);
-    if (index.isValid()) {
-        view_->childView()->edit(index);
-    }
+//    QEventLoop loop;
+//    QTimer::singleShot(100, &loop, &QEventLoop::quit);
+//    loop.exec();
+
+//    QModelIndex index = view_->model()->indexFromPath(dest);
+//    if (index.isValid()) {
+//        view_->childView()->edit(index);
+//    }
 }
 
 void FolderMenu::onPasteActionTriggered() 
