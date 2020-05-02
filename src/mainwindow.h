@@ -53,6 +53,7 @@ public:
     void addTabWithPage(Fm::FilePath path);
 
 protected:
+    void paintEvent(QPaintEvent *e) override;
     void closeEvent(QCloseEvent *e) override;
     void resizeEvent(QResizeEvent *e) override;
 

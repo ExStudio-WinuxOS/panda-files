@@ -43,6 +43,7 @@ public:
         /* respect the toolbar icon size (can be set with some styles) */
         int icnSize = style()->pixelMetric(QStyle::PM_ToolBarIconSize);
         setIconSize(QSize(icnSize, icnSize));
+        setProperty("ENABLE_TRANSPARENT", true);
 
         setText(displayName);
 

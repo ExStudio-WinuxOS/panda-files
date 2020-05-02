@@ -38,8 +38,10 @@
 #include <QApplication>
 #include <QStandardPaths>
 #include <QClipboard>
+#include <QPainter>
 #include <QDebug>
 #include <QEvent>
+#include <QWindow>
 
 #include "lib/filemenu.h"
 #include "lib/bookmarkaction.h"
@@ -127,6 +129,8 @@ MainWindow::MainWindow(Fm::FilePath path)
         setWindowState(windowState() | Qt::WindowMaximized);
     }
     setWindowTitle(tr("File Manager"));
+    setAttribute(Qt::WA_TranslucentBackground);
+    setProperty("ENABLE_BLUR_BEHIND_HINT", true);
 
     initViewFrame();
     addTabWithPage(path);
@@ -174,6 +178,14 @@ void MainWindow::addTabWithPage(Fm::FilePath path)
     }
     viewFrame_->tabBar()->insertTab(index, page->windowTitle());
     updateTabBar();
+}
+
+void MainWindow::paintEvent(QPaintEvent *e)
+{
+    QPainter painter(this);
+    painter.setBrush(QColor(255, 255, 255, 190));
+    painter.setPen(Qt::NoPen);
+    painter.drawRect(rect());
 }
 
 void MainWindow::closeEvent(QCloseEvent *e)

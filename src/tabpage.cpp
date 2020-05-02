@@ -116,6 +116,7 @@ TabPage::TabPage(QWidget* parent):
     folderView_ = new View(settings.viewMode(), this);
     folderView_->setMargins(settings.folderViewCellMargins());
     folderView_->setShadowHidden(settings.shadowHidden());
+    folderView_->setIconSize(FolderView::IconMode, QSize(64, 64));
     connect(folderView_, &View::selChanged, this, &TabPage::onSelChanged);
     connect(folderView_, &View::clickedBack, this, &TabPage::backwardRequested);
     connect(folderView_, &View::clickedForward, this, &TabPage::forwardRequested);

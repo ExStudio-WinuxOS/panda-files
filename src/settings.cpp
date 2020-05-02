@@ -68,7 +68,7 @@ Settings::Settings():
     sidePaneVisible_(true),
     showMenuBar_(true),
     splitView_(false),
-    viewMode_(Fm::FolderView::IconMode),
+    viewMode_(Fm::FolderView::ThumbnailMode),
     showHidden_(false),
     sortOrder_(Qt::AscendingOrder),
     sortColumn_(Fm::FolderModel::ColumnFileName),
@@ -267,8 +267,8 @@ bool Settings::loadFile(QString filePath)
     sidePaneIconSize_ = toIconSize(settings.value(QStringLiteral("SidePaneIconSize"), 24).toInt(), Small);
     thumbnailIconSize_ = toIconSize(settings.value(QStringLiteral("ThumbnailIconSize"), 128).toInt(), Thumbnail);
 
-    folderViewCellMargins_ = (settings.value(QStringLiteral("FolderViewCellMargins"), QSize(3, 3)).toSize()
-                              .expandedTo(QSize(0, 0))).boundedTo(QSize(48, 48));
+    folderViewCellMargins_ = (settings.value(QStringLiteral("FolderViewCellMargins"), QSize(10, 10)).toSize()
+                              .expandedTo(QSize(0, 0))).boundedTo(QSize(64, 64));
 
     // detailed list columns
     customColumnWidths_ = settings.value(QStringLiteral("CustomColumnWidths")).toList();
