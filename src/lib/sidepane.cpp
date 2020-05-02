@@ -22,215 +22,57 @@
 #include <QComboBox>
 #include <QVBoxLayout>
 #include <QHeaderView>
-#include "placesview.h"
-#include "dirtreeview.h"
-#include "dirtreemodel.h"
 #include "filemenu.h"
 
 namespace Fm {
 
-SidePane::SidePane(QWidget* parent):
-    QWidget(parent),
-    view_(nullptr),
-    combo_(nullptr),
+SidePane::SidePane(QWidget* parent)
+  : QWidget(parent),
+    view_(new Fm::PlacesView),
     iconSize_(24, 24),
-    mode_(ModeNone),
-    showHidden_(false) {
-
+    showHidden_(false)
+{
     verticalLayout = new QVBoxLayout(this);
     verticalLayout->setContentsMargins(0, 0, 0, 0);
+    verticalLayout->addWidget(view_);
 
-    // combo_ = new QComboBox(this);
-    // combo_->addItem(tr("Lists")); // "Places" is already used in PlacesModel
-    // combo_->addItem(tr("Directory Tree"));
-    // connect(combo_, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this, &SidePane::onComboCurrentIndexChanged);
-    // verticalLayout->addWidget(combo_);
+    // visually merge it with its surroundings
+    view_->setFrameShape(QFrame::NoFrame);
+    QPalette p = view_->palette();
+    p.setColor(QPalette::Base, QColor(Qt::transparent));
+    p.setColor(QPalette::Text, p.color(QPalette::WindowText));
+    view_->setPalette(p);
+    view_->viewport()->setAutoFillBackground(false);
+
+    view_->restoreHiddenItems(restorableHiddenPlaces_);
+    view_->setIconSize(iconSize_);
+    view_->setCurrentPath(currentPath_);
+    connect(view_, &PlacesView::chdirRequested, this, &SidePane::chdirRequested);
+    connect(view_, &PlacesView::hiddenItemSet, this, &SidePane::hiddenPlaceSet);
 }
 
-SidePane::~SidePane() {
+SidePane::~SidePane()
+{
     // qDebug("delete SidePane");
 }
 
-void SidePane::onComboCurrentIndexChanged(int current) {
-    if(current != mode_) {
-        setMode(Mode(current));
-    }
-}
-
-void SidePane::setIconSize(QSize size) {
+void SidePane::setIconSize(QSize size)
+{
     iconSize_ = size;
-    switch(mode_) {
-    case ModePlaces:
-        static_cast<PlacesView*>(view_)->setIconSize(size);
-        /* Falls through. */
-    case ModeDirTree:
-        static_cast<QTreeView*>(view_)->setIconSize(size);
-        break;
-    default:
-        ;
-    }
+    view_->setIconSize(size);
 }
 
-void SidePane::setCurrentPath(Fm::FilePath path) {
+void SidePane::setCurrentPath(Fm::FilePath path)
+{
     Q_ASSERT(path);
+
     currentPath_ = std::move(path);
-    switch(mode_) {
-    case ModePlaces:
-        static_cast<PlacesView*>(view_)->setCurrentPath(currentPath_);
-        break;
-    case ModeDirTree:
-        static_cast<DirTreeView*>(view_)->setCurrentPath(currentPath_);
-        break;
-    default:
-        ;
-    }
+    view_->setCurrentPath(currentPath_);
 }
 
-SidePane::Mode SidePane::modeByName(const char* str) {
-    if(str == nullptr) {
-        return ModeNone;
-    }
-    if(strcmp(str, "places") == 0) {
-        return ModePlaces;
-    }
-    if(strcmp(str, "dirtree") == 0) {
-        return ModeDirTree;
-    }
-    return ModeNone;
-}
-
-const char* SidePane::modeName(SidePane::Mode mode) {
-    switch(mode) {
-    case ModePlaces:
-        return "places";
-    case ModeDirTree:
-        return "dirtree";
-    default:
-        return nullptr;
-    }
-}
-
-bool SidePane::setHomeDir(const char* /*home_dir*/) {
-    if(view_ == nullptr) {
-        return false;
-    }
-    // TODO: SidePane::setHomeDir
-
-    switch(mode_) {
-    case ModePlaces:
-        // static_cast<PlacesView*>(view_);
-        return true;
-    case ModeDirTree:
-        // static_cast<PlacesView*>(view_);
-        return true;
-    default:
-        ;
-    }
-    return true;
-}
-
-void SidePane::initDirTree() {
-    DirTreeModel* model = new DirTreeModel(view_);
-    model->setShowHidden(showHidden_);
-
-    Fm::FilePathList rootPaths;
-    rootPaths.emplace_back(Fm::FilePath::homeDir());
-    rootPaths.emplace_back(Fm::FilePath::fromLocalPath("/"));
-    model->addRoots(std::move(rootPaths));
-    static_cast<DirTreeView*>(view_)->setModel(model);
-    // wait for the roots to be added and only then set the current path
-    connect(model, &DirTreeModel::rootsAdded, view_, [this] {
-        if(mode_ == ModeDirTree) {
-            DirTreeView* dirTreeView = static_cast<DirTreeView*>(view_);
-            dirTreeView->setCurrentPath(currentPath_);
-        }
-    });
-}
-
-void SidePane::setMode(Mode mode) {
-    if(mode == mode_) {
-        return;
-    }
-
-    if(view_) {
-        delete view_;
-        view_ = nullptr;
-        //if(sp->update_popup)
-        //  g_signal_handlers_disconnect_by_func(sp->view, on_item_popup, sp);
-    }
-    mode_ = mode;
-
-    // combo_->setCurrentIndex(mode);
-    switch(mode) {
-    case ModePlaces: {
-        PlacesView* placesView = new Fm::PlacesView(this);
-
-        // visually merge it with its surroundings
-        placesView->setFrameShape(QFrame::NoFrame);
-        QPalette p = placesView->palette();
-        p.setColor(QPalette::Base, QColor(Qt::transparent));
-        p.setColor(QPalette::Text, p.color(QPalette::WindowText));
-        placesView->setPalette(p);
-        placesView->viewport()->setAutoFillBackground(false);
-
-        view_ = placesView;
-        placesView->restoreHiddenItems(restorableHiddenPlaces_);
-        placesView->setIconSize(iconSize_);
-        placesView->setCurrentPath(currentPath_);
-        connect(placesView, &PlacesView::chdirRequested, this, &SidePane::chdirRequested);
-        connect(placesView, &PlacesView::hiddenItemSet, this, &SidePane::hiddenPlaceSet);
-        break;
-    }
-    case ModeDirTree: {
-        DirTreeView* dirTreeView = new Fm::DirTreeView(this);
-        view_ = dirTreeView;
-        initDirTree();
-        dirTreeView->setIconSize(iconSize_);
-        connect(dirTreeView, &DirTreeView::chdirRequested, this, &SidePane::chdirRequested);
-        connect(dirTreeView, &DirTreeView::openFolderInNewWindowRequested,
-                this, &SidePane::openFolderInNewWindowRequested);
-        connect(dirTreeView, &DirTreeView::openFolderInNewTabRequested,
-                this, &SidePane::openFolderInNewTabRequested);
-        connect(dirTreeView, &DirTreeView::openFolderInTerminalRequested,
-                this, &SidePane::openFolderInTerminalRequested);
-        connect(dirTreeView, &DirTreeView::createNewFolderRequested,
-                this, &SidePane::createNewFolderRequested);
-        connect(dirTreeView, &DirTreeView::prepareFileMenu,
-                this, &SidePane::prepareFileMenu);
-        break;
-    }
-    default:
-        ;
-    }
-    if(view_) {
-        // if(sp->update_popup)
-        //  g_signal_connect(sp->view, "item-popup", G_CALLBACK(on_item_popup), sp);
-        verticalLayout->addWidget(view_);
-    }
-    Q_EMIT modeChanged(mode);
-}
-
-void SidePane::setShowHidden(bool show_hidden) {
-    if(view_ == nullptr || show_hidden == showHidden_) {
-        return;
-    }
-    showHidden_ = show_hidden;
-    if(mode_ == ModeDirTree) {
-        DirTreeView* dirTreeView = static_cast<DirTreeView*>(view_);
-        DirTreeModel* model = static_cast<DirTreeModel*>(dirTreeView->model());
-        if(model) {
-            model->setShowHidden(showHidden_);
-        }
-    }
-}
-
-void SidePane::restoreHiddenPlaces(const QSet<QString>& items) {
-    if(mode_ == ModePlaces) {
-        static_cast<PlacesView*>(view_)->restoreHiddenItems(items);
-    }
-    else {
-        restorableHiddenPlaces_.unite(items);
-    }
+void SidePane::restoreHiddenPlaces(const QSet<QString>& items)
+{
+    static_cast<PlacesView*>(view_)->restoreHiddenItems(items);
 }
 
 } // namespace Fm

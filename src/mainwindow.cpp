@@ -123,7 +123,6 @@ MainWindow::MainWindow(Fm::FilePath path)
 
     // init sidepane
     sidePane_->setIconSize(QSize(settings.sidePaneIconSize(), settings.sidePaneIconSize()));
-    sidePane_->setMode(Fm::SidePane::ModePlaces);
     sidePane_->restoreHiddenPlaces(settings.getHiddenPlaces());
 
     splitter_->setOrientation(Qt::Horizontal);
@@ -257,7 +256,6 @@ void MainWindow::updateCurrentPage()
 
         // update side page.
         sidePane_->setCurrentPath(page->path());
-        sidePane_->setShowHidden(page->showHidden());
 
         goBackButton_->setEnabled(page->canBackward());
         goForwardButton_->setEnabled(page->canForward());

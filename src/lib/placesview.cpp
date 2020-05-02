@@ -127,7 +127,8 @@ bool PlacesProxyModel::filterAcceptsRow(int source_row, const QModelIndex& sourc
 }
 
 PlacesView::PlacesView(QWidget* parent):
-    QTreeView(parent) {
+    QTreeView(parent)
+{
     setRootIsDecorated(false);
     setHeaderHidden(true);
     setIndentation(12);

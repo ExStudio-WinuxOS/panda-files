@@ -67,7 +67,8 @@ private:
     bool hiddenItemsRestored_;
 };
 
-class LIBFM_QT_API PlacesView : public QTreeView {
+class LIBFM_QT_API PlacesView : public QTreeView
+{
     Q_OBJECT
 
 public:

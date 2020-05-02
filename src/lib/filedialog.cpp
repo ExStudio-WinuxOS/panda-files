@@ -40,7 +40,6 @@ FileDialog::FileDialog(QWidget* parent, FilePath path) :
     });
 
     // side pane
-    ui->sidePane->setMode(Fm::SidePane::ModePlaces);
     connect(ui->sidePane, &SidePane::chdirRequested, [this](int /*type*/, const FilePath &path) {
         setDirectoryPath(path);
     });

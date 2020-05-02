@@ -22,6 +22,7 @@
 #define FM_SIDEPANE_H
 
 #include "libfmqtglobals.h"
+#include "placesview.h"
 #include <QWidget>
 
 #include "core/filepath.h"
@@ -34,16 +35,9 @@ namespace Fm {
 
 class FileMenu;
 
-class LIBFM_QT_API SidePane : public QWidget {
+class LIBFM_QT_API SidePane : public QWidget
+{
     Q_OBJECT
-
-public:
-    enum Mode {
-        ModeNone = -1,
-        ModePlaces = 0,
-        ModeDirTree,
-        NumModes
-    };
 
 public:
     explicit SidePane(QWidget* parent = nullptr);
@@ -61,37 +55,13 @@ public:
 
     void setCurrentPath(Fm::FilePath path);
 
-    void setMode(Mode mode);
-
-    Mode mode() const {
-        return mode_;
-    }
-
-    QWidget* view() const {
+    QWidget *view() const {
         return view_;
     }
-
-    static const char* modeName(Mode mode);
-
-    static Mode modeByName(const char* str);
-
-#if 0 // FIXME: are these APIs from libfm-qt needed?
-    int modeCount(void) {
-        return NumModes;
-    }
-
-    QString modeLabel(Mode mode);
-
-    QString modeTooltip(Mode mode);
-#endif
-
-    void setShowHidden(bool show_hidden);
 
     bool showHidden() const {
         return showHidden_;
     }
-
-    bool setHomeDir(const char* home_dir);
 
     void chdir(Fm::FilePath path) {
         setCurrentPath(std::move(path));
@@ -105,25 +75,16 @@ Q_SIGNALS:
     void openFolderInNewTabRequested(const Fm::FilePath& path);
     void openFolderInTerminalRequested(const Fm::FilePath& path);
     void createNewFolderRequested(const Fm::FilePath& path);
-    void modeChanged(Fm::SidePane::Mode mode);
 
     void prepareFileMenu(Fm::FileMenu* menu); // emit before showing a Fm::FileMenu
 
     void hiddenPlaceSet(const QString& str, bool hide);
 
-protected Q_SLOTS:
-    void onComboCurrentIndexChanged(int current);
-
-private:
-    void initDirTree();
-
 private:
     Fm::FilePath currentPath_;
-    QWidget* view_;
-    QComboBox* combo_;
-    QVBoxLayout* verticalLayout;
+    Fm::PlacesView *view_;
+    QVBoxLayout *verticalLayout;
     QSize iconSize_;
-    Mode mode_;
     bool showHidden_;
     QSet<QString> restorableHiddenPlaces_;
 };

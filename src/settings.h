@@ -944,7 +944,6 @@ private:
     bool lastWindowMaximized_;
     int splitterPos_;
     bool sidePaneVisible_;
-    Fm::SidePane::Mode sidePaneMode_;
     bool showMenuBar_;
     bool splitView_;
 

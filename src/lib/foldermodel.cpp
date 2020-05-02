@@ -307,7 +307,8 @@ QVariant FolderModel::data(const QModelIndex& index, int role/* = Qt::DisplayRol
 
     switch(role) {
     case Qt::ToolTipRole:
-        return QVariant(makeTooltip(item));
+        // return QVariant(makeTooltip(item));
+        return QVariant();
     case Qt::DisplayRole:  {
         switch(index.column()) {
         case ColumnFileName:
