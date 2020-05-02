@@ -25,3 +25,4 @@ include(CMakePackageConfigHelpers)
 add_subdirectory(src)
 
 install(FILES data/panda-applications.menu DESTINATION "/etc/xdg/menus" COMPONENT Runtime)
+install(FILES panda-files.desktop DESTINATION "/usr/share/applications")
