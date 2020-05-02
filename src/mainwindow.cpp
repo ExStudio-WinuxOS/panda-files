@@ -58,6 +58,10 @@ MainWindow *MainWindow::m_lastActive = nullptr;
 MainWindow::MainWindow(Fm::FilePath path)
     : QMainWindow(),
       pathBarLayout_(new QHBoxLayout),
+      goBackButton_(new QPushButton),
+      goForwardButton_(new QPushButton),
+      iconViewButton_(new QPushButton),
+      listViewButton_(new QPushButton),
       pathEntry_(nullptr),
       pathBar_(new Fm::PathBar(this)),
       sidePane_(new Fm::SidePane),
@@ -74,8 +78,25 @@ MainWindow::MainWindow(Fm::FilePath path)
     QWidget *pathBarWidget = new QWidget;
     pathBarLayout_->setMargin(0);
     pathBarLayout_->setSpacing(0);
+    pathBarLayout_->addSpacing(5);
+    pathBarLayout_->addWidget(goBackButton_);
+    pathBarLayout_->addSpacing(5);
+    pathBarLayout_->addWidget(goForwardButton_);
+    pathBarLayout_->addSpacing(5);
     pathBarLayout_->addWidget(pathBar_);
+    pathBarLayout_->addSpacing(5);
+    pathBarLayout_->addWidget(iconViewButton_);
+    pathBarLayout_->addSpacing(5);
+    pathBarLayout_->addWidget(listViewButton_);
+    pathBarLayout_->addSpacing(5);
     pathBarWidget->setLayout(pathBarLayout_);
+
+    goBackButton_->setIcon(QIcon::fromTheme("go-previous"));
+    goForwardButton_->setIcon(QIcon::fromTheme("go-next"));
+    iconViewButton_->setIcon(QIcon::fromTheme(QLatin1String("view-list-icons"),
+                                              style()->standardIcon(QStyle::SP_FileDialogContentsView)));
+    listViewButton_->setIcon(QIcon::fromTheme(QLatin1String("view-list-details"),
+                                              style()->standardIcon(QStyle::SP_FileDialogDetailedView)));
 
     QWidget *topBarWidget = new QWidget;
     QHBoxLayout *topBarLayout = new QHBoxLayout(topBarWidget);
@@ -139,6 +160,12 @@ MainWindow::MainWindow(Fm::FilePath path)
     connect(splitter_, &QSplitter::splitterMoved, this, &MainWindow::onSplitterMoved);
     connect(pathBar_, &Fm::PathBar::chdir, this, &MainWindow::onPathBarChdir);
     connect(sidePane_, &Fm::SidePane::chdirRequested, this, &MainWindow::onSidePaneChdirRequested);
+
+    // buttons
+    connect(goBackButton_, &QPushButton::clicked, this, &MainWindow::onGoBackButtonClicked);
+    connect(goForwardButton_, &QPushButton::clicked, this, &MainWindow::onForwardButtonClicked);
+    connect(iconViewButton_, &QPushButton::clicked, this, &MainWindow::onIconViewButtonClicked);
+    connect(listViewButton_, &QPushButton::clicked, this, &MainWindow::onListViewButtonClicked);
 }
 
 MainWindow::~MainWindow()
@@ -152,8 +179,8 @@ void MainWindow::chdir(Fm::FilePath path)
         TabPage *page = currentPage();
         if (page) {
             page->chdir(path);
-
             pathBar_->setPath(page->path());
+            updateCurrentPage();
         }
     });
 }
@@ -232,8 +259,14 @@ void MainWindow::updateCurrentPage()
 {
     TabPage *page = currentPage();
     if (page) {
-        // setWindowTitle(page->windowTitle());
         pathBar_->setPath(page->path());
+
+        // update side page.
+        sidePane_->setCurrentPath(page->path());
+        sidePane_->setShowHidden(page->showHidden());
+
+        goBackButton_->setEnabled(page->canBackward());
+        goForwardButton_->setEnabled(page->canForward());
     }
 }
 
@@ -332,4 +365,34 @@ void MainWindow::onSidePaneChdirRequested(int type, const Fm::FilePath &path)
     } else if(type == 2) { // new window
         (new MainWindow(path))->show();
     }
+}
+
+void MainWindow::onGoBackButtonClicked()
+{
+    QTimer::singleShot(0, this, [=] {
+        if (TabPage *page = currentPage()) {
+            page->backward();
+            updateCurrentPage();
+        }
+    });
+}
+
+void MainWindow::onForwardButtonClicked()
+{
+    QTimer::singleShot(0, this, [=] {
+        if (TabPage *page = currentPage()) {
+            page->forward();
+            updateCurrentPage();
+        }
+    });
+}
+
+void MainWindow::onIconViewButtonClicked()
+{
+    currentPage()->setViewMode(Fm::FolderView::IconMode);
+}
+
+void MainWindow::onListViewButtonClicked()
+{
+    currentPage()->setViewMode(Fm::FolderView::DetailedListMode);
 }

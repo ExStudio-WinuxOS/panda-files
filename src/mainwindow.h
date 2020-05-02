@@ -23,6 +23,7 @@
 #include <QMainWindow>
 #include <QStackedWidget>
 #include <QToolBar>
+#include <QPushButton>
 #include <QSplitter>
 #include <QTabBar>
 
@@ -74,10 +75,20 @@ private:
     void onStackedWidgetWidgetRemoved(int index);
     void onSidePaneChdirRequested(int type, const Fm::FilePath &path);
 
+    void onGoBackButtonClicked();
+    void onForwardButtonClicked();
+    void onIconViewButtonClicked();
+    void onListViewButtonClicked();
+
 private:
     static MainWindow *m_lastActive;
 
     QHBoxLayout *pathBarLayout_;
+
+    QPushButton *goBackButton_;
+    QPushButton *goForwardButton_;
+    QPushButton *iconViewButton_;
+    QPushButton *listViewButton_;
 
     Fm::PathEdit *pathEntry_;
     Fm::PathBar *pathBar_;
