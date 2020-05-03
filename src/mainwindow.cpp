@@ -48,6 +48,7 @@
 #include "lib/fileoperation.h"
 #include "lib/utilities.h"
 #include "lib/filepropsdialog.h"
+#include "lib/fileoperation.h"
 #include "lib/pathedit.h"
 #include "lib/pathbar.h"
 #include "lib/core/fileinfo.h"
@@ -138,8 +139,8 @@ MainWindow::MainWindow(Fm::FilePath path)
         setWindowState(windowState() | Qt::WindowMaximized);
     }
     setWindowTitle(tr("File Manager"));
-    setAttribute(Qt::WA_TranslucentBackground);
-    setProperty("ENABLE_BLUR_BEHIND_HINT", true);
+    //setAttribute(Qt::WA_TranslucentBackground);
+    //setProperty("ENABLE_BLUR_BEHIND_HINT", true);
 
     initViewFrame();
     initShortcuts();
@@ -214,10 +215,12 @@ void MainWindow::addTabWithPage(Fm::FilePath path)
 
 void MainWindow::paintEvent(QPaintEvent *e)
 {
-    QPainter painter(this);
-    painter.setBrush(QColor(255, 255, 255, 190));
-    painter.setPen(Qt::NoPen);
-    painter.drawRect(rect());
+//    QPainter painter(this);
+//    painter.setBrush(QColor(255, 255, 255, 190));
+//    painter.setPen(Qt::NoPen);
+//    painter.drawRect(centralWidget()->rect());
+
+    QWidget::paintEvent(e);
 }
 
 void MainWindow::closeEvent(QCloseEvent *e)
@@ -254,7 +257,7 @@ void MainWindow::initViewFrame()
     connect(viewFrame_->tabBar(), &QTabBar::tabBarClicked, this, &MainWindow::onTabBarClicked);
     connect(viewFrame_->stackedWidget(), &QStackedWidget::widgetRemoved, this, &MainWindow::onStackedWidgetWidgetRemoved);
 }
-#include "lib/fileoperation.h"
+
 void MainWindow::initShortcuts()
 {
     QShortcut *shortcut;
@@ -279,7 +282,6 @@ void MainWindow::initShortcuts()
 
         goUp();
     });
-
 
     shortcut = new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_C), this);
     connect(shortcut, &QShortcut::activated, this, [=] {
