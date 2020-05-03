@@ -37,12 +37,12 @@ SidePane::SidePane(QWidget* parent)
     verticalLayout->addWidget(view_);
 
     // visually merge it with its surroundings
-    view_->setFrameShape(QFrame::NoFrame);
-    QPalette p = view_->palette();
-    p.setColor(QPalette::Base, QColor(Qt::transparent));
-    p.setColor(QPalette::Text, p.color(QPalette::WindowText));
-    view_->setPalette(p);
-    view_->viewport()->setAutoFillBackground(false);
+//    view_->setFrameShape(QFrame::NoFrame);
+//    QPalette p = view_->palette();
+//    p.setColor(QPalette::Base, QColor(Qt::transparent));
+//    p.setColor(QPalette::Text, p.color(QPalette::WindowText));
+//    view_->setPalette(p);
+//    view_->viewport()->setAutoFillBackground(false);
 
     view_->restoreHiddenItems(restorableHiddenPlaces_);
     view_->setIconSize(iconSize_);

@@ -65,7 +65,7 @@ MainWindow::MainWindow(Fm::FilePath path)
       pathEntry_(nullptr),
       pathBar_(new Fm::PathBar(this)),
       sidePane_(new Fm::SidePane),
-      splitter_(new QSplitter(Qt::Horizontal)),
+      splitter_(new QSplitter(Qt::Horizontal, this)),
       viewFrame_(new ViewFrame),
       m_bookmarks(Fm::Bookmarks::globalInstance()),
       fileLauncher_(this)
@@ -99,17 +99,10 @@ MainWindow::MainWindow(Fm::FilePath path)
                                               style()->standardIcon(QStyle::SP_FileDialogContentsView)));
     listViewButton_->setIcon(QIcon::fromTheme(QLatin1String("view-list-details"),
                                               style()->standardIcon(QStyle::SP_FileDialogDetailedView)));
-
-    QWidget *contentWidget = new QWidget;
-    QHBoxLayout *contentLayout = new QHBoxLayout(contentWidget);
-    contentLayout->setMargin(0);
-    contentLayout->setSpacing(0);
-    contentLayout->addWidget(splitter_);
-
     layout->setMargin(0);
     layout->setSpacing(0);
     layout->addWidget(topBarWidget);
-    layout->addWidget(contentWidget);
+    layout->addWidget(splitter_);
 
     setAttribute(Qt::WA_DeleteOnClose);
 
@@ -130,13 +123,14 @@ MainWindow::MainWindow(Fm::FilePath path)
     splitter_->addWidget(sidePane_);
     splitter_->addWidget(viewFrame_);
     splitter_->setChildrenCollapsible(false);
+    splitter_->setHandleWidth(0);
+    splitter_->setStyleSheet("background: white;");
 
     // setup the splitter
     splitter_->setStretchFactor(1, 1); // only the right pane can be stretched
     QList<int> sizes;
     sizes.append(settings.splitterPos());
-    sizes.append(300);
-    splitter_->setSizes(sizes);
+    splitter_->setSizes({ settings.splitterPos() });
 
     // size from settings
     resize(settings.windowWidth(), settings.windowHeight());

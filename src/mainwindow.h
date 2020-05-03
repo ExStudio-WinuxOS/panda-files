@@ -84,12 +84,10 @@ private:
     static MainWindow *m_lastActive;
 
     QHBoxLayout *pathBarLayout_;
-
     QPushButton *goBackButton_;
     QPushButton *goForwardButton_;
     QPushButton *iconViewButton_;
     QPushButton *listViewButton_;
-
     Fm::PathEdit *pathEntry_;
     Fm::PathBar *pathBar_;
     Fm::SidePane *sidePane_;
