@@ -124,7 +124,7 @@ MainWindow::MainWindow(Fm::FilePath path)
     splitter_->addWidget(viewFrame_);
     splitter_->setChildrenCollapsible(false);
     splitter_->setHandleWidth(0);
-    splitter_->setStyleSheet("background: white;");
+    splitter_->setStyleSheet("QSplitter { background: white; }");
 
     // setup the splitter
     splitter_->setStretchFactor(1, 1); // only the right pane can be stretched
@@ -142,6 +142,7 @@ MainWindow::MainWindow(Fm::FilePath path)
     setProperty("ENABLE_BLUR_BEHIND_HINT", true);
 
     initViewFrame();
+    initShortcuts();
     addTabWithPage(path);
 
     // detect change of splitter position
@@ -174,6 +175,16 @@ void MainWindow::chdir(Fm::FilePath path)
         if (page) {
             page->chdir(path);
             pathBar_->setPath(page->path());
+            updateCurrentPage();
+        }
+    });
+}
+
+void MainWindow::goUp()
+{
+    QTimer::singleShot(0, this, [=] {
+        if (TabPage *page = currentPage()) {
+            page->up();
             updateCurrentPage();
         }
     });
@@ -243,6 +254,58 @@ void MainWindow::initViewFrame()
     connect(viewFrame_->tabBar(), &QTabBar::tabBarClicked, this, &MainWindow::onTabBarClicked);
     connect(viewFrame_->stackedWidget(), &QStackedWidget::widgetRemoved, this, &MainWindow::onStackedWidgetWidgetRemoved);
 }
+#include "lib/fileoperation.h"
+void MainWindow::initShortcuts()
+{
+    QShortcut *shortcut;
+    shortcut = new QShortcut(QKeySequence(Qt::Key_Escape), this);
+
+    connect(shortcut, &QShortcut::activated, [this] {
+        if (currentPage()) {
+            currentPage()->clearFilter();
+            currentPage()->folderView()->childView()->setFocus();
+        }
+    });
+
+    shortcut = new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_L), this);
+    connect(shortcut, &QShortcut::activated, this, &MainWindow::focusPathEntry);
+
+    shortcut = new QShortcut(QKeySequence(Qt::Key_Backspace), this);
+    connect(shortcut, &QShortcut::activated, this, [=] {
+        if (currentPage() && currentPage()->isFilterBarVisible()) {
+            currentPage()->backspacePressed();
+            return;
+        }
+
+        goUp();
+    });
+
+
+    shortcut = new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_C), this);
+    connect(shortcut, &QShortcut::activated, this, [=] {
+        TabPage *page = currentPage();
+        auto paths = page->selectedFilePaths();
+        Fm::copyFilesToClipboard(paths);
+    });
+
+    shortcut = new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_X), this);
+    connect(shortcut, &QShortcut::activated, this, [=] {
+        TabPage *page = currentPage();
+        auto paths = page->selectedFilePaths();
+        Fm::cutFilesToClipboard(paths);
+    });
+
+    shortcut = new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_V), this);
+    connect(shortcut, &QShortcut::activated, this, [=] {
+        Fm::pasteFilesFromClipboard(currentPage()->path(), this);
+    });
+
+    shortcut = new QShortcut(QKeySequence(Qt::Key_Delete), this);
+    connect(shortcut, &QShortcut::activated, this, [=] {
+        auto paths = currentPage()->selectedFilePaths();
+        Fm::FileOperation::trashFiles(paths, false, this);
+    });
+}
 
 TabPage *MainWindow::currentPage()
 {
@@ -270,6 +333,11 @@ void MainWindow::updateTabBar()
     } else {
         viewFrame_->tabBar()->setVisible(true);
     }
+}
+
+void MainWindow::focusPathEntry()
+{
+    pathBar_->openEditor();
 }
 
 void MainWindow::onSplitterMoved(int pos, int index)

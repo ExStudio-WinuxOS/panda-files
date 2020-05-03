@@ -5,6 +5,6 @@ GenericName=File Manager
 Comment=PandaOS File Manager
 Exec=panda-files %U
 MimeType=inode/directory;
-Icon=system-file-manager
+Icon=panda-files
 Categories=FileManager;Utility;Core;Qt;
 StartupNotify=true

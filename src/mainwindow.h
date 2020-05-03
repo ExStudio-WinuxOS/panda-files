@@ -51,6 +51,7 @@ public:
     ~MainWindow();
 
     void chdir(Fm::FilePath path);
+    void goUp();
     void addTabWithPage(Fm::FilePath path);
 
 protected:
@@ -60,11 +61,13 @@ protected:
 
 private:
     void initViewFrame();
+    void initShortcuts();
 
     TabPage *currentPage();
 
     void updateCurrentPage();
     void updateTabBar();
+    void focusPathEntry();
 
     void onSplitterMoved(int pos, int index);
     void onPathBarChdir(const Fm::FilePath &dirPath);
