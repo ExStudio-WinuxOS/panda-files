@@ -153,18 +153,18 @@ void FolderItemDelegate::paint(QPainter* painter, const QStyleOptionViewItem& op
 
         opt.decorationAlignment = Qt::AlignHCenter | Qt::AlignTop;
         opt.displayAlignment = Qt::AlignTop | Qt::AlignHCenter;
-
-        if (opt.state & QStyle::State_Selected || opt.state & QStyle::State_MouseOver) {
-            painter->save();
-            painter->setPen(QColor(80, 150, 250, 210));
-            if (opt.state & QStyle::State_Selected) {
-                painter->setBrush(QColor(80, 150, 250, 200));
-            } else {
-                painter->setBrush(QColor(80, 150, 250, 80));
-            }
-            painter->drawRoundedRect(roundedRect, radius, radius);
-            painter->restore();
-        }
+// 不采用这种设计
+//        if (opt.state & QStyle::State_Selected || opt.state & QStyle::State_MouseOver) {
+//            painter->save();
+//            painter->setPen(QColor(80, 150, 250, 210));
+//            if (opt.state & QStyle::State_Selected) {
+//                painter->setBrush(QColor(80, 150, 250, 200));
+//            } else {
+//                painter->setBrush(QColor(80, 150, 250, 80));
+//            }
+//            painter->drawRoundedRect(roundedRect, radius, radius);
+//            painter->restore();
+//        }
 
         // draw the icon
         QIcon::Mode iconMode = shadowIcon ? QIcon::Disabled
@@ -328,22 +328,49 @@ void FolderItemDelegate::drawText(QPainter* painter, QStyleOptionViewItem& opt, 
 
     QRectF selRect = boundRect.adjusted(-2, -2, 2, 2);
 
-    if(!painter) { // no painter, calculate the bounding rect only
+    if (!painter) { // no painter, calculate the bounding rect only
         textRect = selRect;
         return;
     }
 
+    // Respect the active and inactive palettes (some styles can use different colors for them).
+    // Also, take into account a probable disabled palette.
+    QPalette::ColorGroup cg = (opt.state & QStyle::State_Enabled)
+                                  ? (opt.state & QStyle::State_Active)
+                                      ? QPalette::Active
+                                      : QPalette::Inactive
+                                  : QPalette::Disabled;
+    if (opt.state & QStyle::State_Selected) {
+        if (!opt.widget) {
+            painter->fillRect(selRect, opt.palette.highlight());
+        }
+        painter->setPen(opt.palette.color(cg, QPalette::HighlightedText));
+    }
+    else {
+        painter->setPen(opt.palette.color(cg, QPalette::Text));
+    }
+
+    if (opt.state & QStyle::State_Selected || opt.state & QStyle::State_MouseOver) {
+        if (const QWidget* widget = opt.widget) {  // let the style engine do it
+            QStyle* style = widget->style() ? widget->style() : qApp->style();
+            QStyleOptionViewItem o(opt);
+            o.text = QString();
+            o.rect = selRect.toAlignedRect().intersected(opt.rect); // due to clipping and rounding, we might lose 1px
+            o.showDecorationSelected = true;
+            style->drawPrimitive(QStyle::PE_PanelItemViewItem, &o, painter, widget);
+        }
+    }
+
     // draw shadow for text if the item is not selected and a shadow color is set
-    if(!(opt.state & QStyle::State_Selected) && shadowColor_.isValid()) {
+    if (!(opt.state & QStyle::State_Selected) && shadowColor_.isValid()) {
         QPen prevPen = painter->pen();
         painter->setPen(QPen(shadowColor_));
-        for(int i = 0; i < visibleLines; ++i) {
+        for (int i = 0; i < visibleLines; ++i) {
             QTextLine line = layout.lineAt(i);
-            if(i == (visibleLines - 1) && !elidedText.isEmpty()) { // the last line, draw elided text
+            if (i == (visibleLines - 1) && !elidedText.isEmpty()) { // the last line, draw elided text
                 QPointF pos(boundRect.x() + line.position().x() + 1, boundRect.y() + line.y() + line.ascent() + 1);
                 painter->drawText(pos, elidedText);
-            }
-            else {
+            } else {
                 line.draw(painter, textRect.topLeft() + QPointF(1, 1));
             }
         }
@@ -351,13 +378,12 @@ void FolderItemDelegate::drawText(QPainter* painter, QStyleOptionViewItem& opt, 
     }
 
     // draw text
-    for(int i = 0; i < visibleLines; ++i) {
+    for (int i = 0; i < visibleLines; ++i) {
         QTextLine line = layout.lineAt(i);
-        if(i == (visibleLines - 1) && !elidedText.isEmpty()) { // the last line, draw elided text
+        if (i == (visibleLines - 1) && !elidedText.isEmpty()) { // the last line, draw elided text
             QPointF pos(boundRect.x() + line.position().x(), boundRect.y() + line.y() + line.ascent());
             painter->drawText(pos, elidedText);
-        }
-        else {
+        }  else {
             line.draw(painter, textRect.topLeft());
         }
     }
