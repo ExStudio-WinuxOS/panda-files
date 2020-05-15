@@ -27,6 +27,7 @@
 #include "lib/core/bookmarks.h"
 #include "lib/core/folderconfig.h"
 #include "lib/filesearchdialog.h"
+#include "lib/fileoperation.h"
 
 // Qt
 #include <QPixmapCache>
@@ -216,6 +217,13 @@ void Application::findFiles(QStringList paths)
 void Application::connectToServer()
 {
 
+}
+
+void Application::emptyTrash()
+{
+    Fm::FilePathList files;
+    files.push_back(Fm::FilePath::fromUri("trash:///"));
+    Fm::FileOperation::deleteFiles(std::move(files), true, nullptr);
 }
 
 void Application::openFolders(Fm::FileInfoList files)

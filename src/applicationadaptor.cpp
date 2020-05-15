@@ -88,3 +88,10 @@ void ApplicationAdaptor::setWallpaper(const QString &in0)
 
     Q_EMIT wallpaperChanged();
 }
+
+void ApplicationAdaptor::emptyTrash()
+{
+    // handle method call org.panda.Files.emptyTrash
+
+    parent()->emptyTrash();
+}

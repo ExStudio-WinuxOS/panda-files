@@ -46,6 +46,7 @@ public:
     void desktopManager(bool enabled);
     void findFiles(QStringList paths = QStringList());
     void connectToServer();
+    void emptyTrash();
 
     void openFolders(Fm::FileInfoList files);
     void openFolderInTerminal(Fm::FilePath path);

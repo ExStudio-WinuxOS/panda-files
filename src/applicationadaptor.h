@@ -81,6 +81,7 @@ public Q_SLOTS: // METHODS
     void preferences(const QString &in0);
     void quit();
     void setWallpaper(const QString &in0);
+    void emptyTrash();
 Q_SIGNALS: // SIGNALS
     void wallpaperChanged();
 };
