@@ -410,6 +410,25 @@ FileOperation* FileOperation::deleteFiles(Fm::FilePathList srcFiles, bool prompt
     return op;
 }
 
+FileOperation* FileOperation::emptyTrash(bool prompt, QWidget* parent) {
+    if(prompt) {
+        int result = QMessageBox::warning(parent ? parent->window() : nullptr,
+                                          tr("Confirm"),
+                                          tr("Do you want to empty the trash?"),
+                                          QMessageBox::Yes | QMessageBox::No,
+                                          QMessageBox::No);
+        if(result != QMessageBox::Yes) {
+            return nullptr;
+        }
+    }
+
+    Fm::FilePathList filePathList;
+    filePathList.push_back(Fm::FilePath::fromUri("trash:///"));
+    FileOperation* op = new FileOperation(FileOperation::Delete, std::move(filePathList), parent);
+    op->run();
+    return op;
+}
+
 //static
 FileOperation* FileOperation::trashFiles(Fm::FilePathList srcFiles, bool prompt, QWidget* parent) {
     if(prompt) {

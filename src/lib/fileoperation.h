@@ -119,6 +119,8 @@ public:
 
     static FileOperation* deleteFiles(Fm::FilePathList srcFiles, bool promp = true, QWidget* parent = nullptr);
 
+    static FileOperation* emptyTrash(bool prompt = true, QWidget* parent = nullptr);
+
     static FileOperation* trashFiles(Fm::FilePathList srcFiles, bool promp = true, QWidget* parent = nullptr);
 
     static FileOperation* unTrashFiles(Fm::FilePathList srcFiles, QWidget* parent = nullptr);

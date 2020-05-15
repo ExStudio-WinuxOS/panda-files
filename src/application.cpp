@@ -221,9 +221,7 @@ void Application::connectToServer()
 
 void Application::emptyTrash()
 {
-    Fm::FilePathList files;
-    files.push_back(Fm::FilePath::fromUri("trash:///"));
-    Fm::FileOperation::deleteFiles(std::move(files), true, nullptr);
+    Fm::FileOperation::emptyTrash(true, nullptr);
 }
 
 void Application::openFolders(Fm::FileInfoList files)
