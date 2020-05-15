@@ -53,6 +53,7 @@ public:
     static FilePropsDialog* showForFiles(Fm::FileInfoList files, QWidget* parent = nullptr) {
         FilePropsDialog* dlg = new FilePropsDialog(std::move(files), parent);
         dlg->show();
+        dlg->activateWindow();
         return dlg;
     }
 
