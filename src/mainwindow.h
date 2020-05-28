@@ -83,6 +83,8 @@ private:
     void onIconViewButtonClicked();
     void onListViewButtonClicked();
 
+    void setViewMode(Fm::FolderView::ViewMode);
+
 private:
     static MainWindow *m_lastActive;
 

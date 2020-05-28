@@ -452,10 +452,24 @@ void MainWindow::onForwardButtonClicked()
 
 void MainWindow::onIconViewButtonClicked()
 {
-    currentPage()->setViewMode(Fm::FolderView::IconMode);
+    Settings &settings = static_cast<Application *>(qApp)->settings();
+    settings.setViewMode(Fm::FolderView::IconMode);
+    setViewMode(Fm::FolderView::IconMode);
 }
 
 void MainWindow::onListViewButtonClicked()
 {
-    currentPage()->setViewMode(Fm::FolderView::DetailedListMode);
+    Settings &settings = static_cast<Application *>(qApp)->settings();
+    settings.setViewMode(Fm::FolderView::DetailedListMode);
+    setViewMode(Fm::FolderView::DetailedListMode);
+}
+
+void MainWindow::setViewMode(Fm::FolderView::ViewMode viewMode)
+{
+    for (int i = 0; i < viewFrame_->stackedWidget()->count(); ++i) {
+        TabPage *page = reinterpret_cast<TabPage *>(viewFrame_->stackedWidget()->widget(i));
+        if (page) {
+            page->setViewMode(viewMode);
+        }
+    }
 }

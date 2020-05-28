@@ -27,7 +27,8 @@ inline static Fm::FolderModel::ColumnId sortColumnFromString(const QString str);
 
 Settings::Settings():
     QObject(),
-    supportTrash_(Fm::uriExists("trash:///")), // check if trash:/// is supported
+    // supportTrash_(Fm::uriExists("trash:///")), // check if trash:/// is supported
+    supportTrash_(true),
     fallbackIconThemeName_(),
     useFallbackIconTheme_(QIcon::themeName().isEmpty() || QIcon::themeName() == QLatin1String("hicolor")),
     bookmarkOpenMethod_(OpenInCurrentTab),
