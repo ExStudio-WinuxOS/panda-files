@@ -4,7 +4,7 @@ This is a file manager and desktop, built for pandaos, the core is based on libf
 
 ## Dependencies
 
-`sudo apt install cmake qtbase5-dev qtbase5-private-dev libqt5svg5-dev libqt5x11extras5-dev qttools5-dev libmenu-cache-dev libexif-dev`
+`sudo pacman -S cmake qt5-base qt5-x11extras qt5-tools menu-cache libexif xdg-user-dirs`
 
 ## Build
 
@@ -15,6 +15,10 @@ cmake ..
 make
 sudo make install
 ```
+
+## Create user directories
+
+`$ xdg-user-dirs-update`
 
 ## License
 
