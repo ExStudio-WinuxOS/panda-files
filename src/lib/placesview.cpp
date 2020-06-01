@@ -204,12 +204,12 @@ void PlacesView::spanFirstColumn() {
             setFirstColumnSpanned(i, indx, true);
         }
     }
-    indx = proxyModel_->mapFromSource(model_->bookmarksRoot->index());
-    if(indx.isValid()) {
-        for(int i = 0; i < indx.model()->rowCount(indx); ++i) {
-            setFirstColumnSpanned(i, indx, true);
-        }
-    }
+    // indx = proxyModel_->mapFromSource(model_->bookmarksRoot->index());
+    // if(indx.isValid()) {
+    //     for(int i = 0; i < indx.model()->rowCount(indx); ++i) {
+    //         setFirstColumnSpanned(i, indx, true);
+    //     }
+    // }
 }
 
 void PlacesView::activateRow(int type, const QModelIndex& index) {

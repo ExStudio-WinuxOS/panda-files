@@ -153,21 +153,21 @@ PlacesModel::PlacesModel(QObject* parent):
     }
 
     // bookmarks
-    bookmarksRoot = new QStandardItem(tr("Bookmarks"));
-    bookmarksRoot->setSelectable(false);
-    bookmarksRoot->setColumnCount(2);
-    appendRow(bookmarksRoot);
+    // bookmarksRoot = new QStandardItem(tr("Bookmarks"));
+    // bookmarksRoot->setSelectable(false);
+    // bookmarksRoot->setColumnCount(2);
+    // appendRow(bookmarksRoot);
 
-    bookmarks = Fm::Bookmarks::globalInstance();
-    loadBookmarks();
-    connect(bookmarks.get(), &Fm::Bookmarks::changed, this, &PlacesModel::onBookmarksChanged);
+    // bookmarks = Fm::Bookmarks::globalInstance();
+    // loadBookmarks();
+    // connect(bookmarks.get(), &Fm::Bookmarks::changed, this, &PlacesModel::onBookmarksChanged);
 }
 
 void PlacesModel::loadBookmarks() {
-    for(auto& bm_item: bookmarks->items()) {
-        PlacesModelBookmarkItem* item = new PlacesModelBookmarkItem(bm_item);
-        bookmarksRoot->appendRow(item);
-    }
+    // for(auto& bm_item: bookmarks->items()) {
+    //     PlacesModelBookmarkItem* item = new PlacesModelBookmarkItem(bm_item);
+    //     bookmarksRoot->appendRow(item);
+    // }
 }
 
 PlacesModel::~PlacesModel() {
@@ -302,9 +302,9 @@ PlacesModelItem* PlacesModel::itemFromPath(const Fm::FilePath &path) {
     if(!item) {
         item = itemFromPath(devicesRoot, path);
     }
-    if(!item) {
-        item = itemFromPath(bookmarksRoot, path);
-    }
+    // if(!item) {
+    //     item = itemFromPath(bookmarksRoot, path);
+    // }
     return item;
 }
 
@@ -348,13 +348,13 @@ PlacesModelMountItem* PlacesModel::itemFromMount(GMount* mount) {
 }
 
 PlacesModelBookmarkItem* PlacesModel::itemFromBookmark(std::shared_ptr<const Fm::BookmarkItem> bkitem) {
-    int rowCount = bookmarksRoot->rowCount();
-    for(int i = 0; i < rowCount; ++i) {
-        PlacesModelBookmarkItem* item = static_cast<PlacesModelBookmarkItem*>(bookmarksRoot->child(i, 0));
-        if(item->bookmark() == bkitem) {
-            return item;
-        }
-    }
+    // int rowCount = bookmarksRoot->rowCount();
+    // for(int i = 0; i < rowCount; ++i) {
+    //     PlacesModelBookmarkItem* item = static_cast<PlacesModelBookmarkItem*>(bookmarksRoot->child(i, 0));
+    //     if(item->bookmark() == bkitem) {
+    //         return item;
+    //     }
+    // }
     return nullptr;
 }
 
@@ -507,8 +507,8 @@ void PlacesModel::onVolumeRemoved(GVolumeMonitor* /*monitor*/, GVolume* volume, 
 
 void PlacesModel::onBookmarksChanged() {
     // remove all items
-    bookmarksRoot->removeRows(0, bookmarksRoot->rowCount());
-    loadBookmarks();
+    // bookmarksRoot->removeRows(0, bookmarksRoot->rowCount());
+    // loadBookmarks();
 }
 
 Qt::ItemFlags PlacesModel::flags(const QModelIndex& index) const {
@@ -579,17 +579,17 @@ bool PlacesModel::dropMimeData(const QMimeData* data, Qt::DropAction /*action*/,
         delete []pathStr;
 
         int newPos = -1;
-        if(row == -1 && column == -1) { // drop on an item
-            // we only allow dropping on an bookmark item
-            if(item && item->parent() == bookmarksRoot) {
-                newPos = parent.row();
-            }
-        }
-        else { // drop on a position between items
-            if(item == bookmarksRoot) { // we only allow dropping on a bookmark item
-                newPos = row;
-            }
-        }
+        // if(row == -1 && column == -1) { // drop on an item
+        //     // we only allow dropping on an bookmark item
+        //     if(item && item->parent() == bookmarksRoot) {
+        //         newPos = parent.row();
+        //     }
+        // }
+        // else { // drop on a position between items
+        //     if(item == bookmarksRoot) { // we only allow dropping on a bookmark item
+        //         newPos = row;
+        //     }
+        // }
         if(newPos != -1 && newPos != oldPos) { // reorder the bookmark item
             bookmarks->reorder(draggedItem, newPos);
         }
@@ -636,20 +636,20 @@ bool PlacesModel::dropMimeData(const QMimeData* data, Qt::DropAction /*action*/,
         // Drop uris:
         // (1) On the root bookmark (row == -1 && column == -1 && item && !item->parent());
         // (2) Or at a position between items (row != -1 || column != -1);
-        if(item == bookmarksRoot
-           // (3) Or after bookmarks (for users' convenience).
-           || (item == nullptr && row == -1 && column == -1)) {
-            auto paths = pathListFromQUrls(data->urls());
-            for(auto& path: paths) {
-                // FIXME: this is a blocking call
-                if(g_file_query_file_type(path.gfile().get(), G_FILE_QUERY_INFO_NOFOLLOW_SYMLINKS,
-                                          nullptr) == G_FILE_TYPE_DIRECTORY) {
-                    auto disp_name = path.baseName();
-                    bookmarks->insert(path, QString::fromUtf8(disp_name.get()), row);
-                }
-            }
-            return true;
-        }
+        // if(item == bookmarksRoot
+        //    // (3) Or after bookmarks (for users' convenience).
+        //    || (item == nullptr && row == -1 && column == -1)) {
+        //     auto paths = pathListFromQUrls(data->urls());
+        //     for(auto& path: paths) {
+        //         // FIXME: this is a blocking call
+        //         if(g_file_query_file_type(path.gfile().get(), G_FILE_QUERY_INFO_NOFOLLOW_SYMLINKS,
+        //                                   nullptr) == G_FILE_TYPE_DIRECTORY) {
+        //             auto disp_name = path.baseName();
+        //             bookmarks->insert(path, QString::fromUtf8(disp_name.get()), row);
+        //         }
+        //     }
+        //     return true;
+        // }
     }
     return false;
 }
@@ -661,43 +661,43 @@ bool PlacesModel::canDropMimeData(const QMimeData* data, Qt::DropAction action, 
         // (dropping between child items is handled by PlacesModel::flags)
         return false;
     }
-    if(data->hasFormat(QStringLiteral("application/x-bookmark-row"))) {
-        // as in PlacesModel::dropMimeData
-        bool canDrop = false;
-        if(row == -1 && column == -1) {
-            if(item && item->parent() == bookmarksRoot) {
-                canDrop = true;
-            }
-        }
-        else if(item == bookmarksRoot) {
-            canDrop = true;
-        }
-        return canDrop;
-    }
+    // if(data->hasFormat(QStringLiteral("application/x-bookmark-row"))) {
+    //     // as in PlacesModel::dropMimeData
+    //     bool canDrop = false;
+    //     if(row == -1 && column == -1) {
+    //         if(item && item->parent() == bookmarksRoot) {
+    //             canDrop = true;
+    //         }
+    //     }
+    //     else if(item == bookmarksRoot) {
+    //         canDrop = true;
+    //     }
+    //     return canDrop;
+    // }
     return QStandardItemModel::canDropMimeData(data, action, row, column, parent);
 }
 
 // we only support dragging bookmark items and use our own
 // custom pseudo-mime-type: application/x-bookmark-row
 QMimeData* PlacesModel::mimeData(const QModelIndexList& indexes) const {
-    if(!indexes.isEmpty()) {
-        // we only allow dragging one bookmark item at a time, so handle the first index only.
-        QModelIndex index = indexes.first();
-        QStandardItem* item = itemFromIndex(index);
-        // ensure that it's really a bookmark item
-        if(item && item->parent() == bookmarksRoot) {
-            PlacesModelBookmarkItem* bookmarkItem = static_cast<PlacesModelBookmarkItem*>(item);
-            QMimeData* mime = new QMimeData();
-            QByteArray data;
-            QDataStream stream(&data, QIODevice::WriteOnly);
-            // There is no safe and cross-process way to store a reference of a row.
-            // Let's store the pos, name, and path of the bookmark item instead.
-            auto pathStr = bookmarkItem->path().toString();
-            stream << index.row() << pathStr.get();
-            mime->setData(QStringLiteral("application/x-bookmark-row"), data);
-            return mime;
-        }
-    }
+    // if(!indexes.isEmpty()) {
+    //     // we only allow dragging one bookmark item at a time, so handle the first index only.
+    //     QModelIndex index = indexes.first();
+    //     QStandardItem* item = itemFromIndex(index);
+    //     // ensure that it's really a bookmark item
+    //     if(item && item->parent() == bookmarksRoot) {
+    //         PlacesModelBookmarkItem* bookmarkItem = static_cast<PlacesModelBookmarkItem*>(item);
+    //         QMimeData* mime = new QMimeData();
+    //         QByteArray data;
+    //         QDataStream stream(&data, QIODevice::WriteOnly);
+    //         // There is no safe and cross-process way to store a reference of a row.
+    //         // Let's store the pos, name, and path of the bookmark item instead.
+    //         auto pathStr = bookmarkItem->path().toString();
+    //         stream << index.row() << pathStr.get();
+    //         mime->setData(QStringLiteral("application/x-bookmark-row"), data);
+    //         return mime;
+    //     }
+    // }
     return nullptr;
 }
 
