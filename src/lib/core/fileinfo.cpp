@@ -353,6 +353,14 @@ bool FileInfo::canThumbnail() const {
 
 /* full path of the file is required by this function */
 bool FileInfo::isExecutableType() const {
+    const QString mimeTypeName = QString::fromLatin1(mimeType().get()->name());
+    if (mimeTypeName == "application/x-executable" ||
+            mimeTypeName == "application/x-sharedlib" ||
+            mimeTypeName == "application/vnd.appimage" ||
+            mimeTypeName == "application/x-iso9660-appimage") {
+        return true;
+    }
+
     if(isDesktopEntry()) {
         /* treat desktop entries as executables if
          they are native and have read permission */
