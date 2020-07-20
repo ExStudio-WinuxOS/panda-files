@@ -80,8 +80,8 @@ PathBar::PathBar(QWidget* parent)
     buttonsLayout_->setSpacing(0);
     buttonsLayout_->setSizeConstraint(QLayout::SetFixedSize); // required when added to scroll area according to QScrollArea doc.
     scrollArea_->setWidget(buttonsWidget_); // make the buttons widget scrollable if the path is too long
-    scrollArea_->setStyleSheet("background: transparent;");
-    scrollArea_->setStyleSheet("QScrollArea { background: #F2F2F2; border-radius: 6px; }");
+    // scrollArea_->setStyleSheet("background: transparent;");
+    // scrollArea_->setStyleSheet("QScrollArea { background: #F2F2F2; border-radius: 6px; }");
 }
 
 void PathBar::resizeEvent(QResizeEvent* event)
