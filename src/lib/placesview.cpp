@@ -132,6 +132,7 @@ PlacesView::PlacesView(QWidget* parent):
     setRootIsDecorated(false);
     setHeaderHidden(true);
     setIndentation(12);
+    setFrameShape(QFrame::NoFrame);
 
     connect(this, &QTreeView::clicked, this, &PlacesView::onClicked);
     connect(this, &QTreeView::pressed, this, &PlacesView::onPressed);
