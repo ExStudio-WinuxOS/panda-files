@@ -36,7 +36,6 @@ public:
         QToolButton(parent),
         name_{name} {
 
-        setSizePolicy(QSizePolicy::Fixed, QSizePolicy::MinimumExpanding);
         setCheckable(true);
         setAutoExclusive(true);
         setToolButtonStyle(Qt::ToolButtonTextBesideIcon);

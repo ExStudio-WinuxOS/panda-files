@@ -39,49 +39,46 @@ PathBar::PathBar(QWidget* parent)
     tempPathEdit_(nullptr),
     toggledBtn_(nullptr)
 {
-    QHBoxLayout* topLayout = new QHBoxLayout(this);
-    // topLayout->setContentsMargins(0, 0, 0, 0);
+    QHBoxLayout* topLayout = new QHBoxLayout;
+    topLayout->setContentsMargins(0, 0, 0, 0);
     topLayout->setSpacing(0);
+    setLayout(topLayout);
     bool rtl(layoutDirection() == Qt::RightToLeft);
 
     // the arrow button used to scroll to start of the path
     scrollToStart_ = new QToolButton(this);
     scrollToStart_->setArrowType(rtl ? Qt::RightArrow : Qt::LeftArrow);
     scrollToStart_->setAutoRepeat(true);
-    scrollToStart_->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::MinimumExpanding);
+    //scrollToStart_->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::MinimumExpanding);
     connect(scrollToStart_, &QToolButton::clicked, this, &PathBar::onScrollButtonClicked);
     topLayout->addWidget(scrollToStart_);
 
     // there might be too many buttons when the path is long, so make it scrollable.
     scrollArea_ = new QScrollArea(this);
-    scrollArea_->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+    //scrollArea_->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     scrollArea_->setFrameShape(QFrame::NoFrame);
     scrollArea_->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     scrollArea_->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    scrollArea_->setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContents);
+    scrollArea_->setWidgetResizable(true);
     scrollArea_->verticalScrollBar()->setDisabled(true);
     connect(scrollArea_->horizontalScrollBar(), &QAbstractSlider::valueChanged, this, &PathBar::setArrowEnabledState);
-    topLayout->addWidget(scrollArea_, 1); // stretch factor=1, make it expandable
+    topLayout->addWidget(scrollArea_);
 
     // the arrow button used to scroll to end of the path
     scrollToEnd_ = new QToolButton(this);
     scrollToEnd_->setArrowType(rtl ? Qt::LeftArrow : Qt::RightArrow);
     scrollToEnd_->setAutoRepeat(true);
-    scrollToEnd_->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::MinimumExpanding);
     connect(scrollToEnd_, &QToolButton::clicked, this, &PathBar::onScrollButtonClicked);
     topLayout->addWidget(scrollToEnd_);
 
     // container widget of the path buttons
     buttonsWidget_ = new QWidget(this);
-    buttonsWidget_->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+    buttonsWidget_->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
     buttonsLayout_ = new QHBoxLayout(buttonsWidget_);
     buttonsLayout_->setContentsMargins(0, 0, 0, 0);
-    buttonsLayout_->setSpacing(0);
-    buttonsLayout_->setSizeConstraint(QLayout::SetFixedSize); // required when added to scroll area according to QScrollArea doc.
-    scrollArea_->setWidget(buttonsWidget_); // make the buttons widget scrollable if the path is too long
-    // scrollArea_->setStyleSheet("background: transparent;");
-    // scrollArea_->setStyleSheet("QScrollArea { background: #F2F2F2; border-radius: 6px; }");
+    buttonsLayout_->setSpacing(3);
+    scrollArea_->setWidget(buttonsWidget_);
 }
 
 void PathBar::resizeEvent(QResizeEvent* event)
