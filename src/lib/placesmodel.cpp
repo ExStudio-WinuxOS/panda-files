@@ -76,8 +76,8 @@ PlacesModel::PlacesModel(QObject* parent):
                                       Fm::FilePath::fromLocalPath(QStandardPaths::writableLocation(QStandardPaths::MoviesLocation).toLocal8Bit().constData()));
     placesRoot->appendRow(videosItem);
 
-    computerItem = new PlacesModelItem("computer", tr("Computer"), Fm::FilePath::fromUri("computer:///"));
-    placesRoot->appendRow(computerItem);
+    // computerItem = new PlacesModelItem("computer", tr("Computer"), Fm::FilePath::fromUri("computer:///"));
+    // placesRoot->appendRow(computerItem);
 
 //    { // Applications
 //        const char* applicaion_icon_names[] = {"system-software-install", "applications-accessories", "application-x-executable"};
@@ -257,7 +257,7 @@ void PlacesModel::createTrashItem() {
     }
     g_object_unref(gf);
 
-    placesRoot->insertRow(computerItem->row() + 1, trashItem_);
+    placesRoot->insertRow(videosItem->row() + 1, trashItem_);
     QTimer::singleShot(0, this, SLOT(updateTrash()));
 }
 
