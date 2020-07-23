@@ -103,6 +103,7 @@ MainWindow::MainWindow(Fm::FilePath path)
     layout->setMargin(0);
     layout->setSpacing(0);
     layout->addWidget(topBarWidget);
+    layout->addSpacing(5);
     layout->addWidget(splitter_);
 
     setAttribute(Qt::WA_DeleteOnClose);
