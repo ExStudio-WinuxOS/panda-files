@@ -61,8 +61,8 @@ MainWindow::MainWindow(Fm::FilePath path)
       pathBarLayout_(new QHBoxLayout),
       goBackButton_(new QPushButton),
       goForwardButton_(new QPushButton),
-      iconViewButton_(new QPushButton),
-      listViewButton_(new QPushButton),
+      iconViewButton_(new QToolButton),
+      listViewButton_(new QToolButton),
       pathEntry_(nullptr),
       pathBar_(new Fm::PathBar(this)),
       sidePane_(new Fm::SidePane),
@@ -100,6 +100,12 @@ MainWindow::MainWindow(Fm::FilePath path)
                                               style()->standardIcon(QStyle::SP_FileDialogContentsView)));
     listViewButton_->setIcon(QIcon::fromTheme(QLatin1String("view-list-details"),
                                               style()->standardIcon(QStyle::SP_FileDialogDetailedView)));
+
+    iconViewButton_->setCheckable(true);
+    iconViewButton_->setAutoExclusive(true);
+    listViewButton_->setCheckable(true);
+    listViewButton_->setAutoExclusive(true);
+
     layout->setMargin(0);
     layout->setSpacing(0);
     layout->addWidget(topBarWidget);
@@ -145,6 +151,7 @@ MainWindow::MainWindow(Fm::FilePath path)
 
     initViewFrame();
     initShortcuts();
+    initModeButtons();
     addTabWithPage(path);
 
     // detect change of splitter position
@@ -310,6 +317,13 @@ void MainWindow::initShortcuts()
     });
 }
 
+void MainWindow::initModeButtons()
+{
+    Settings &settings = static_cast<Application *>(qApp)->settings();
+    iconViewButton_->setChecked(settings.viewMode() == Fm::FolderView::IconMode);
+    listViewButton_->setChecked(settings.viewMode() == Fm::FolderView::DetailedListMode);
+}
+
 TabPage *MainWindow::currentPage()
 {
     return reinterpret_cast<TabPage *>(viewFrame_->stackedWidget()->currentWidget());
@@ -456,6 +470,7 @@ void MainWindow::onIconViewButtonClicked()
     Settings &settings = static_cast<Application *>(qApp)->settings();
     settings.setViewMode(Fm::FolderView::IconMode);
     setViewMode(Fm::FolderView::IconMode);
+    initModeButtons();
 }
 
 void MainWindow::onListViewButtonClicked()
@@ -463,6 +478,7 @@ void MainWindow::onListViewButtonClicked()
     Settings &settings = static_cast<Application *>(qApp)->settings();
     settings.setViewMode(Fm::FolderView::DetailedListMode);
     setViewMode(Fm::FolderView::DetailedListMode);
+    initModeButtons();
 }
 
 void MainWindow::setViewMode(Fm::FolderView::ViewMode viewMode)

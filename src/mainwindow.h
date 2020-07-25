@@ -22,9 +22,10 @@
 
 #include <QMainWindow>
 #include <QStackedWidget>
-#include <QToolBar>
 #include <QPushButton>
+#include <QToolButton>
 #include <QSplitter>
+#include <QToolBar>
 #include <QTabBar>
 
 #include "settings.h"
@@ -62,6 +63,7 @@ protected:
 private:
     void initViewFrame();
     void initShortcuts();
+    void initModeButtons();
 
     TabPage *currentPage();
 
@@ -91,8 +93,8 @@ private:
     QHBoxLayout *pathBarLayout_;
     QPushButton *goBackButton_;
     QPushButton *goForwardButton_;
-    QPushButton *iconViewButton_;
-    QPushButton *listViewButton_;
+    QToolButton *iconViewButton_;
+    QToolButton *listViewButton_;
     Fm::PathEdit *pathEntry_;
     Fm::PathBar *pathBar_;
     Fm::SidePane *sidePane_;
