@@ -20,6 +20,8 @@
 
 #include "appchooserdialog.h"
 #include "ui_app-chooser-dialog.h"
+ #include "utilities.h"
+
 #include <QPushButton>
 #include <gio/gdesktopappinfo.h>
 #include <glib/gstdio.h>
@@ -245,7 +247,7 @@ void AppChooserDialog::accept() {
 #endif
             /* if need to set default */
             if(ui->setDefault->isChecked()) {
-                g_app_info_set_as_default_for_type(selectedApp_.get(), mimeType_->name(), nullptr);
+                setDefaultAppForType(selectedApp_, mimeType_);
             }
         }
     }
