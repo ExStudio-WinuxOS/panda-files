@@ -80,6 +80,9 @@ Q_SIGNALS:
 
     void hiddenPlaceSet(const QString& str, bool hide);
 
+protected:
+    bool event(QEvent* event) override;
+
 private:
     Fm::FilePath currentPath_;
     Fm::PlacesView *view_;

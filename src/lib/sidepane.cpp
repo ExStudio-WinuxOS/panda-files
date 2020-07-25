@@ -22,6 +22,7 @@
 #include <QComboBox>
 #include <QVBoxLayout>
 #include <QHeaderView>
+#include <QEvent>
 #include "filemenu.h"
 
 namespace Fm {
@@ -73,6 +74,19 @@ void SidePane::setCurrentPath(Fm::FilePath path)
 void SidePane::restoreHiddenPlaces(const QSet<QString>& items)
 {
     static_cast<PlacesView*>(view_)->restoreHiddenItems(items);
+}
+
+bool SidePane::event(QEvent* event) {
+    // when the SidePane's style changes, we should set the text color of
+    // PlacesView to its window text color again because the latter may have changed
+    if (event->type() == QEvent::StyleChange) {
+        if (PlacesView* placesView = static_cast<PlacesView*>(view_)) {
+            QPalette p = placesView->palette();
+            p.setColor(QPalette::Text, p.color(QPalette::WindowText));
+            placesView->setPalette(p);
+        }
+    }
+    return QWidget::event(event);
 }
 
 } // namespace Fm
