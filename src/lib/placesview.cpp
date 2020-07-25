@@ -311,6 +311,7 @@ void PlacesView::onClicked(const QModelIndex& index) {
 }
 
 void PlacesView::setCurrentPath(Fm::FilePath path) {
+    clearSelection();
     currentPath_ = std::move(path);
     if(currentPath_) {
         // TODO: search for item with the path in model_ and select it.
@@ -318,12 +319,6 @@ void PlacesView::setCurrentPath(Fm::FilePath path) {
         if(item) {
             selectionModel()->select(proxyModel_->mapFromSource(item->index()), QItemSelectionModel::SelectCurrent | QItemSelectionModel::Rows);
         }
-        else {
-            clearSelection();
-        }
-    }
-    else {
-        clearSelection();
     }
 }
 
