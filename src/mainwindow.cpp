@@ -125,8 +125,8 @@ MainWindow::MainWindow(Fm::FilePath path)
     splitter_->addWidget(sidePane_);
     splitter_->addWidget(viewFrame_);
     splitter_->setChildrenCollapsible(false);
-    splitter_->setHandleWidth(0);
-    splitter_->setStyleSheet("QSplitter { background: white; }");
+    splitter_->setHandleWidth(10);
+    // splitter_->setStyleSheet("QSplitter { background: white; }");
 
     // setup the splitter
     splitter_->setStretchFactor(1, 1); // only the right pane can be stretched
